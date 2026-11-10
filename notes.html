@@ -1,0 +1,1085 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>MVC Working Notes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@700;800&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap">
+<style>
+/* Layout: the site's tab bar, then one readable column; wide tables scroll inside their own box */
+:root{
+  --bg:#edf0ee; --panel:#fafbfa; --ink:#16201c; --muted:#58655f; --line:#d0d8d4; --oxide:#a5432b; --signal:#c98c00;
+  --f-display:'Big Shoulders Stencil Display','Arial Narrow',Impact,sans-serif;
+  --f-body:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --f-mono:'IBM Plex Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root{ --bg:#0f1412; --panel:#161d1a; --ink:#e3eae6; --muted:#8f9d96; --line:#27312d; --oxide:#e0704f; --signal:#f0b429; color-scheme:dark; }
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.6 var(--f-body)}
+.tabs{display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding-block:12px;padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));border-bottom:1px solid var(--line)}
+.tabs .brand{font:800 20px/1 var(--f-display);margin-right:12px;letter-spacing:.02em;color:var(--ink);text-decoration:none}
+.tabs a{font:500 13px/1 var(--f-body);color:var(--muted);text-decoration:none;padding:8px 12px;border-radius:6px;border:1px solid transparent}
+.tabs a:hover{color:var(--ink)}
+.tabs a[aria-current="page"]{color:var(--ink);border-color:var(--line);background:var(--panel)}
+a:focus-visible{outline:2px solid var(--signal);outline-offset:2px}
+main{max-width:960px;margin:0 auto;padding-block:28px 64px;padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px))}
+.eyebrow{font:500 11px/1 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--oxide)}
+h1{font:800 46px/1 var(--f-display);margin:10px 0 14px;text-wrap:balance}
+h2{font:600 22px/1.25 var(--f-body);margin:40px 0 10px;padding-top:16px;border-top:2px solid var(--ink);text-wrap:balance}
+h3{font:600 17px/1.3 var(--f-body);margin:28px 0 6px}
+p,li{max-width:72ch}
+a{color:var(--oxide)}
+img{max-width:100%;height:auto;border:1px solid var(--line);border-radius:8px;background:#fff}
+.tbl-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:8px;background:var(--panel);margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:13.5px;min-width:640px}
+th,td{text-align:left;vertical-align:top;padding:9px 12px;border-bottom:1px solid var(--line)}
+th{font:600 11px/1.3 var(--f-mono);letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+tbody tr:last-child td{border-bottom:0}
+code{font-family:var(--f-mono);font-size:.92em}
+blockquote{margin:12px 0;padding:8px 14px;border-left:3px solid var(--oxide);background:var(--panel)}
+</style>
+</head>
+<body>
+<nav class="tabs" aria-label="Site">
+  <a class="brand" href="index.html">MVC</a>
+  <a href="index.html#model">3D model</a>
+  <a href="index.html#inventory">Tech inventory</a>
+  <a href="index.html#sites">Field sites</a>
+  <a href="plan.html">Action plan</a>
+  <a href="notes.html" aria-current="page">Notes</a>
+  <a href="https://teacherslens.github.io/ibec-mind-map/">Mind map</a>
+</nav>
+<main>
+<div class="eyebrow">Working notes · starting base</div>
+<h1>Where There Is No ___: A Minimum Viable Classroom</h1>
+<p><strong>Project:</strong> IBECLP 1, Fall 2026: Mini Action Plan (PSP Environment and Learning)
+<strong>Context:</strong> Maglares Discovery School. The model transfers to larger schools that want a mobile lab or temporary learning space in a remote setting, for example a forest classroom where a group stays for a week or more.
+<strong>Focus:</strong> The logistics of setup, and what it would take a school to build one.
+<strong>Status:</strong> Working draft (Nov 9, 2026). The kit inventory comes first; the action plan chart comes after.</p>
+<h2>Framing</h2>
+<p>The title borrows from Hesperian's <em>Where There Is No Doctor</em>, a field manual that lets non-specialists act competently without the usual infrastructure. Each blank names a missing support, and the classroom is designed to keep working without it:</p>
+<div class="tbl-wrap"><table>
+<thead>
+<tr>
+<th>Where there is no…</th>
+<th>The design answer</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>power</td>
+<td>Solar plus battery, a power budget, low-wattage devices</td>
+</tr>
+<tr>
+<td>internet</td>
+<td>A satellite link treated as a bonus; the classroom runs offline first</td>
+</tr>
+<tr>
+<td>cloud</td>
+<td>A local server, local storage and local updates</td>
+</tr>
+<tr>
+<td>walls</td>
+<td>A portable shelter, weatherproof cases, humidity control</td>
+</tr>
+<tr>
+<td>technician</td>
+<td>Simple systems, spares, checklists, and student tech leads</td>
+</tr>
+<tr>
+<td>screen</td>
+<td>Analog tools in parallel: notebooks, hand lenses, sketching</td>
+</tr>
+<tr>
+<td>doctor</td>
+<td>First aid, communications and a risk plan (a nod to the original book)</td>
+</tr>
+</tbody>
+</table></div>
+<h2>Design principles</h2>
+<ol>
+<li><strong>Pedagogy drives the kit.</strong> Each item has to serve a step in the learning cycle. Technology sometimes reveals new affordances, so leave room to discover them, but the IB learning pathway decides what goes in the case.</li>
+<li><strong>Offline first.</strong> Every learning activity must work with the satellite link down. Connectivity adds to the classroom; nothing depends on it.</li>
+<li><strong>Tiered build.</strong> <strong>MVP</strong> is the minimum for a working week. <strong>Enhanced</strong> adds depth once the MVP has proven itself. <strong>Aspirational</strong> is the full field studio. Each tier can become a phase in the action plan.</li>
+<li><strong>Carry-in, carry-out.</strong> Everything packs into labelled, weatherproof cases that two adults can move, and the kit comes back intact.</li>
+<li><strong>Analog redundancy.</strong> Every digital capture tool has a paper or hand-tool twin.</li>
+<li><strong>Intentional, not low-tech.</strong> The room can be high-tech, but nothing goes on a table unless it serves that lesson. Lesson setups name the minimum kit.</li>
+</ol>
+<h2>The learning cycle the kit serves</h2>
+<p><strong>Observe → Capture → Investigate → Make → Share → Reflect</strong></p>
+<p>This maps loosely onto PYP inquiry (units of inquiry, documentation, the Exhibition, action) and MYP inquiry, action and reflection (the design cycle, sciences investigation, the personal project, service as action). The IB pathway gets its own section later. For now, each kit item is tagged with the stage it serves.</p>
+<hr />
+<h2>IB frameworks that shape the kit</h2>
+<h3>1. IB approach to technology</h3>
+<p><strong>Status:</strong> a working summary from secondary sources. It is <strong>not yet verified</strong> against IB documents.</p>
+<p><strong>IB-authored sources to locate (ibo.org / Programme Resource Centre):</strong></p>
+<ul>
+<li><em>Teaching and learning with technology</em> (IB, December 2015). This is the IB's own guidance, cited in the <em>Ideal libraries</em> bibliography, and the primary source to find.</li>
+<li><em>IB Digital Blueprint</em> (ibo.org/digital-blueprint). Check whether it is guidance for schools or the IB's own digital strategy before citing it.</li>
+<li>IB statement of principles on AI (ibo.org news).</li>
+<li><em>The role of ICT in the PYP</em> (2011). This is the older PYP document, possibly superseded.</li>
+</ul>
+<p><strong>Working summary (to confirm against the sources above):</strong></p>
+<ul>
+<li>Technology is an integrated medium for inquiry, collaboration, ethics and human-centred problem solving, not an add-on.</li>
+<li><strong>Systems thinking and mindful innovation:</strong> responsible, data-informed technology that strengthens the educator–student relationship rather than replacing human agency.</li>
+<li><strong>Technology as a medium of inquiry:</strong> hands-on investigation, real-time data collection and independent research.</li>
+<li><strong>Global collaboration:</strong> co-creating across borders, building cultural agility.</li>
+<li><strong>Digital citizenship and ethics:</strong> media literacy, privacy, evaluating bias in sources, and an Acceptable Use Policy, developed progressively from the PYP through the MYP.</li>
+<li><strong>PYP:</strong> digital citizenship, basic coding (e.g. Scratch), digital expression, balancing screen time with hands-on inquiry.</li>
+<li><strong>MYP:</strong> media literacy, detecting bias, evaluating digital sources within subject assessment; the design cycle.</li>
+<li><strong>AI:</strong> treated as a structured assistant, not a shortcut around critical thinking; tied to academic integrity.</li>
+</ul>
+<p><strong>What this means for the kit:</strong></p>
+<ul>
+<li>The sensing kit and data loggers are technology as a medium of inquiry.</li>
+<li>Scratch (which has an offline editor) and micro:bit suit PYP coding and the MYP design cycle.</li>
+<li>A field-specific Acceptable Use Policy (AUP) covers photographing people and places, consent, location data and sharing.</li>
+<li>Offline AI stays Aspirational, with use guidelines tied to the academic integrity policy.</li>
+<li>The analog twins carry the screen-time balance.</li>
+</ul>
+<p><strong>Supporting research:</strong> the IB's DP technology research summary (IB Research, 2015, Cooker, Crook &amp; Ainsworth) concludes that innovation and implementation should be driven by pedagogy. It names time, money and professional development as the main barriers. https://www.ibo.org/globalassets/new-structure/research/pdfs/technology-in-the-dp-summary-en.pdf</p>
+<h3>2. IB <em>Ideal libraries: A guide for schools</em> (June 2018)</h3>
+<p><strong>Status:</strong> read in full. Page numbers below are the document's printed page numbers.</p>
+<ul>
+<li><strong>Definition (p. 2):</strong> the IB defines libraries as "combinations of people, places, collections and services that aid and extend learning and teaching." The library and librarian are treated as one system, the <em>library/ian</em> (after Tilke, 2015).</li>
+<li><strong>Places are distributed (p. 3):</strong> because libraries extend learning, they must reach every place where learning happens. Libraries need not be one central space and can be placed where the community needs them, and the guide shows a distributed physical library model (Figure 2). <em>This is the strongest IB warrant for a library-run mobile lab or field classroom.</em></li>
+<li><strong>The 6+1 framework (p. 4):</strong> curating, caretaking, catalyzing, connecting, co-creating and challenging energize learning; the +1, catering (giving users only what they ask for, like an algorithm), does not. The mobile lab can be designed around the six.</li>
+<li><strong>Misinterpretations to avoid (p. 5):</strong></li>
+<li>the library as storage for uncatalogued things (a risk for a kit that sits in cases between trips)</li>
+<li>fully virtual libraries that remove wellbeing support</li>
+<li>imposed silence that blocks active learning, so noise zones should be planned for the learning that needs to happen</li>
+<li><strong>Multiliteracies (pp. 6–8):</strong> multilingualism plus multimodality. The guide asks whether the library is resourced in staffing, space and equipment for multimodal learning, and who is responsible for technology integration. The media capture rig is a multimodality tool.</li>
+<li><strong>Language profiles (pp. 7–8):</strong> personal, functional and instructional languages. The field collection should include home and community languages.</li>
+<li><strong>Libraries and inquiry (p. 9):</strong></li>
+<li>Inquiry is initiated by the learner.</li>
+<li>The IB names curriculum, social-emotional, service, experiential and play-based inquiry.</li>
+<li>The guide cites the <em>Library of Things</em> model of lending equipment. <em>That is a direct precedent for a lendable mobile lab kit.</em></li>
+<li><strong>Librarian archetypes (pp. 14–19):</strong></li>
+<li><strong>Teacher librarian:</strong> co-plans units; supports the PYP exhibition and MYP personal project.</li>
+<li><strong>Media specialist:</strong> technology literacy; may teach MYP design.</li>
+<li><strong>Designer librarian:</strong> designs physical and virtual learning spaces and involves students in co-creating them.</li>
+<li><strong>Student life librarian:</strong> pastoral care and safe spaces.</li>
+<li><strong>Super librarian (caution):</strong> the over-extended librarian. If the library runs the mobile lab, the role needs a clear mandate, time and support, not another add-on.</li>
+<li><strong>Conclusion (p. 12):</strong> the library/ian should be represented in curriculum planning. Effective libraries come from purposeful collaboration between leaders, teachers, learners and library staff.</li>
+</ul>
+<h3>The library as host or operator of the mobile lab</h3>
+<p>Three possible models, which can also be phases:</p>
+<ol>
+<li><strong>Library as lender (Library of Things).</strong> The library catalogues and circulates the kit; teachers and students check it out. The library's caretaking and curating roles fit naturally here.</li>
+<li><strong>Library as co-designer.</strong> A designer or teacher librarian co-plans field units with teachers, curates the field collection and teaches documentation and research skills on site.</li>
+<li><strong>Library as satellite.</strong> The field classroom <em>is</em> a distributed branch of the library for its duration: collection, quiet and noisy zones, a documentation wall and pastoral care. This matches the IB's distributed model (p. 3).</li>
+</ol>
+<p>Leadership implication: whichever model, the IB warns against the super librarian. Ownership, time, budget and backup staffing must be explicit in the action plan.</p>
+<hr />
+<h2>Tech kit inventory</h2>
+<p>Quantities assume one group of <strong>16–20 students and 2–3 adults</strong> on a week-long stay. <strong>Tier</strong> means M = MVP, E = Enhanced, A = Aspirational.</p>
+<h3>1. Power ("where there is no power")</h3>
+<div class="tbl-wrap"><table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Qty</th>
+<th>Purpose</th>
+<th>Tier</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Portable power station (LiFePO4, about 2 kWh)</td>
+<td>1–2</td>
+<td>Main battery for the whole site</td>
+<td>M</td>
+<td>LiFePO4 handles heat and cycling better; check its weight before choosing</td>
+</tr>
+<tr>
+<td>Foldable solar panels (600–800 W total)</td>
+<td>1 set</td>
+<td>Recharge the power station each day</td>
+<td>M</td>
+<td>Needs a sunny clearing; under canopy, plan a charging spot</td>
+</tr>
+<tr>
+<td>Line-interactive UPS</td>
+<td>1</td>
+<td>Keep the satellite link, hub and switch alive through flickers</td>
+<td>M</td>
+<td>Only where there is a grid or generator</td>
+</tr>
+<tr>
+<td>Multi-port USB-C PD charging hub / charging cart</td>
+<td>2</td>
+<td>Charge iPads, mics and lights from the battery</td>
+<td>M</td>
+<td>DC charging wastes less than running bricks off the inverter</td>
+</tr>
+<tr>
+<td>Outdoor-rated extension cords, surge strips, cable ramps</td>
+<td>set</td>
+<td>Safe distribution</td>
+<td>M</td>
+<td>Trip-hazard plan in the forest</td>
+</tr>
+<tr>
+<td>Rechargeable AA/AAA cells and charger</td>
+<td>set</td>
+<td>Recorders, GPS, lights</td>
+<td>M</td>
+<td></td>
+</tr>
+<tr>
+<td>Rechargeable headlamps and lanterns</td>
+<td>1 per person</td>
+<td>Evening sessions, safety</td>
+<td>M</td>
+<td></td>
+</tr>
+<tr>
+<td>Spare camera and mic batteries</td>
+<td>set</td>
+<td>Field capture</td>
+<td>E</td>
+<td></td>
+</tr>
+<tr>
+<td>12 V vehicle inverter / charger</td>
+<td>1</td>
+<td>Top up the batteries during transport</td>
+<td>E</td>
+<td></td>
+</tr>
+<tr>
+<td>Quiet inverter generator</td>
+<td>1</td>
+<td>Backup for long cloudy spells</td>
+<td>A</td>
+<td>Noise and fuel undercut the forest setting; last resort</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Rough daily power budget (to verify against spec sheets):</strong></p>
+<div class="tbl-wrap"><table>
+<thead>
+<tr>
+<th>Load</th>
+<th>Approx. daily use</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>10 iPads, full recharge</td>
+<td>~300 Wh</td>
+</tr>
+<tr>
+<td>1–2 laptops / Mac hub</td>
+<td>~150–250 Wh</td>
+</tr>
+<tr>
+<td>Satellite terminal (portable model, ~25–40 W, run 8 h)</td>
+<td>~200–320 Wh</td>
+</tr>
+<tr>
+<td>Wi-Fi access point and switch (~15–20 W, 10 h)</td>
+<td>~150–200 Wh</td>
+</tr>
+<tr>
+<td>LED projector (~100–150 W, 2 h)</td>
+<td>~200–300 Wh</td>
+</tr>
+<tr>
+<td>Lights, mics, recorders, misc.</td>
+<td>~150 Wh</td>
+</tr>
+<tr>
+<td><strong>Total</strong></td>
+<td><strong>~1.2–1.5 kWh/day</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p>So the MVP needs about 2 kWh of storage plus 600–800 W of solar to keep a margin through a cloudy day. A full-size satellite terminal running all day roughly doubles its own share of the budget.</p>
+<h3>2. Connectivity ("where there is no internet")</h3>
+<div class="tbl-wrap"><table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Qty</th>
+<th>Purpose</th>
+<th>Tier</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Portable LEO satellite terminal + mount/tripod</td>
+<td>1</td>
+<td>Uplink for teacher tasks, messages, updates</td>
+<td>M</td>
+<td>Portable models draw less power; schedule its hours</td>
+</tr>
+<tr>
+<td>Dedicated Wi-Fi 6 access point, outdoor rated</td>
+<td>1</td>
+<td>Local network for device-to-device work</td>
+<td>M</td>
+<td>Don't rely on the satellite provider's router for local traffic</td>
+</tr>
+<tr>
+<td>Small PoE switch + Ethernet cables</td>
+<td>1</td>
+<td>Power the AP and connect the hub</td>
+<td>M</td>
+<td></td>
+</tr>
+<tr>
+<td>Mesh node / second AP</td>
+<td>1</td>
+<td>Extend coverage to a second learning zone</td>
+<td>E</td>
+<td></td>
+</tr>
+<tr>
+<td>Travel router (backup)</td>
+<td>1</td>
+<td>Fallback local network</td>
+<td>E</td>
+<td>Small, cheap insurance</td>
+</tr>
+<tr>
+<td>Two-way radios</td>
+<td>4–6</td>
+<td>Group communication where there is no signal</td>
+<td>M</td>
+<td>Also a safety tool</td>
+</tr>
+<tr>
+<td>Satellite messenger / emergency beacon</td>
+<td>1</td>
+<td>Emergency contact independent of the main link</td>
+<td>M</td>
+<td>Belongs to the safety plan</td>
+</tr>
+</tbody>
+</table></div>
+<h3>3. Local server and storage ("where there is no cloud")</h3>
+<div class="tbl-wrap"><table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Qty</th>
+<th>Purpose</th>
+<th>Tier</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Mac hub (Mac mini or MacBook)</td>
+<td>1</td>
+<td>Editing station, content cache, file server</td>
+<td>M</td>
+<td>Content Caching downloads updates and apps once and shares them locally</td>
+</tr>
+<tr>
+<td>MDM enrolment (Apple School Manager + MDM)</td>
+<td>—</td>
+<td>Configure and lock devices before departure</td>
+<td>M</td>
+<td>All setup happens at school, not in the field</td>
+</tr>
+<tr>
+<td>Shared SSD or small NAS (2–4 TB)</td>
+<td>1</td>
+<td>Landing zone for student video and photos</td>
+<td>M</td>
+<td>Offload footage so the iPads stay usable</td>
+</tr>
+<tr>
+<td>Backup drives (rotating pair)</td>
+<td>2</td>
+<td>Nightly backup; one copy kept off-site</td>
+<td>M</td>
+<td>3-2-1 habit</td>
+</tr>
+<tr>
+<td>Offline content server (e.g. Raspberry Pi running Kiwix and/or Kolibri)</td>
+<td>1</td>
+<td>Offline Wikipedia, Khan Academy and other libraries</td>
+<td>E</td>
+<td>Low power; build and test it at school</td>
+</tr>
+<tr>
+<td>Offline maps and field-ID apps (downloaded in advance)</td>
+<td>—</td>
+<td>Navigation, species ID</td>
+<td>M</td>
+<td>Check each app's offline mode before departure</td>
+</tr>
+<tr>
+<td>Local AI tools (offline)</td>
+<td>—</td>
+<td>Translation, transcription, support for documentation</td>
+<td>A</td>
+<td>An emerging affordance; pilot it, don't depend on it</td>
+</tr>
+</tbody>
+</table></div>
+<h3>4. Capture and documentation (Observe → Capture)</h3>
+<div class="tbl-wrap"><table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Qty</th>
+<th>Purpose</th>
+<th>Tier</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>iPads in rugged, waterproof cases with lanyards</td>
+<td>10 (1 per pair)</td>
+<td>Photo, video, sketching, notes</td>
+<td>M</td>
+<td>Pairs build collaboration and halve the cost</td>
+</tr>
+<tr>
+<td>Styluses</td>
+<td>10</td>
+<td>Annotation, sketching over photos</td>
+<td>M</td>
+<td></td>
+</tr>
+<tr>
+<td>Clip-on macro lenses</td>
+<td>10</td>
+<td>Close-up observation</td>
+<td>M</td>
+<td>Cheap, high impact</td>
+</tr>
+<tr>
+<td>Wireless lav mics (2-transmitter kits)</td>
+<td>2</td>
+<td>Interviews, narration, nature audio</td>
+<td>M</td>
+<td></td>
+</tr>
+<tr>
+<td>Handheld audio recorder</td>
+<td>2</td>
+<td>Soundscapes, acoustic-zone studies</td>
+<td>E</td>
+<td></td>
+</tr>
+<tr>
+<td>Document camera</td>
+<td>1</td>
+<td>Project sketches, sticky notes and notebook pages for the class to annotate</td>
+<td>M</td>
+<td>Celebrates physical work with digital tools</td>
+</tr>
+<tr>
+<td>Table microphones (omnidirectional) + transcription</td>
+<td>1 per table</td>
+<td>Record and transcribe group discussion</td>
+<td>E</td>
+<td>Needs a consent and privacy protocol</td>
+</tr>
+<tr>
+<td>Photo-to-text / transcription app (offline-capable)</td>
+<td>—</td>
+<td>Turn whiteboards and notebook pages into searchable text</td>
+<td>E</td>
+<td>Test offline before deployment</td>
+</tr>
+<tr>
+<td>Tripods / flexible tripods</td>
+<td>5</td>
+<td>Time-lapse, stable video</td>
+<td>M</td>
+<td></td>
+</tr>
+<tr>
+<td>Action camera + mounts</td>
+<td>1–2</td>
+<td>Point-of-view and underwater/stream footage</td>
+<td>E</td>
+<td></td>
+</tr>
+<tr>
+<td>Trail / camera traps</td>
+<td>2–4</td>
+<td>Overnight wildlife observation</td>
+<td>E</td>
+<td>Strong provocation; learning keeps going while students sleep</td>
+</tr>
+<tr>
+<td>Handheld digital microscope (Wi-Fi/USB)</td>
+<td>2</td>
+<td>Magnify and capture small specimens</td>
+<td>E</td>
+<td></td>
+</tr>
+<tr>
+<td>Binoculars</td>
+<td>5</td>
+<td>Observation at a distance</td>
+<td>M</td>
+<td></td>
+</tr>
+<tr>
+<td><strong>Analog twin:</strong> hand lenses, field notebooks, waterproof paper, clipboards, pencils, watercolour sets</td>
+<td>1 per student</td>
+<td>Sketching, journaling, "where there is no screen"</td>
+<td>M</td>
+<td>Non-negotiable</td>
+</tr>
+</tbody>
+</table></div>
+<h3>5. Sensing and investigation (Investigate)</h3>
+<div class="tbl-wrap"><table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Qty</th>
+<th>Purpose</th>
+<th>Tier</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Thermometers / temperature-humidity data loggers</td>
+<td>4</td>
+<td>Microclimate comparisons</td>
+<td>M</td>
+<td></td>
+</tr>
+<tr>
+<td>Water testing kit (pH, turbidity, dissolved oxygen, nitrates)</td>
+<td>2</td>
+<td>Stream and river studies</td>
+<td>M</td>
+<td></td>
+</tr>
+<tr>
+<td>Soil testing kit</td>
+<td>2</td>
+<td>Soil and decomposition inquiries</td>
+<td>E</td>
+<td></td>
+</tr>
+<tr>
+<td>Portable weather station</td>
+<td>1</td>
+<td>Daily data set for the whole stay</td>
+<td>E</td>
+<td></td>
+</tr>
+<tr>
+<td>Microcontroller sensor kits (e.g. micro:bit)</td>
+<td>5</td>
+<td>Build-your-own sensors; coding with purpose</td>
+<td>E</td>
+<td>Strong link to the MYP design cycle</td>
+</tr>
+<tr>
+<td>Sound level meter / app</td>
+<td>2</td>
+<td>Acoustic zones, human-impact studies</td>
+<td>E</td>
+<td></td>
+</tr>
+<tr>
+<td>Handheld GPS / GPS app</td>
+<td>2–4</td>
+<td>Mapping, transects, georeferenced photos</td>
+<td>M</td>
+<td></td>
+</tr>
+<tr>
+<td>Measuring tapes, quadrats, sample jars, nets, trays</td>
+<td>set</td>
+<td>Field sampling</td>
+<td>M</td>
+<td></td>
+</tr>
+<tr>
+<td>Ultrasonic bat detector (iPad attachment)</td>
+<td>1</td>
+<td>Hearing the inaudible</td>
+<td>A</td>
+<td></td>
+</tr>
+<tr>
+<td>Thermal camera</td>
+<td>1</td>
+<td>Heat, animal detection, building studies</td>
+<td>A</td>
+<td></td>
+</tr>
+</tbody>
+</table></div>
+<h3>6. Making and studio (Make)</h3>
+<div class="tbl-wrap"><table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Qty</th>
+<th>Purpose</th>
+<th>Tier</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Editing software (free tools first)</td>
+<td>—</td>
+<td>Video, audio and image editing</td>
+<td>M</td>
+<td>Pre-installed and tested offline</td>
+</tr>
+<tr>
+<td>Portable photo / thermal printer</td>
+<td>1</td>
+<td>Print images for documentation panels and journals</td>
+<td>M</td>
+<td>Makes digital work physical</td>
+</tr>
+<tr>
+<td>Low-tech maker kit (cardboard tools, tape, string, scissors, glue, clay)</td>
+<td>1</td>
+<td>Prototyping, models</td>
+<td>M</td>
+<td></td>
+</tr>
+<tr>
+<td>Portable whiteboards / large paper rolls</td>
+<td>3–4</td>
+<td>Group thinking, sorting, planning</td>
+<td>M</td>
+<td></td>
+</tr>
+<tr>
+<td>Small tool kit for building (saw, drill, clamps)</td>
+<td>1</td>
+<td>Shelters, structures, MYP design</td>
+<td>E</td>
+<td>Adult-supervised</td>
+</tr>
+</tbody>
+</table></div>
+<h3>7. Sharing and exhibition (Share)</h3>
+<div class="tbl-wrap"><table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Qty</th>
+<th>Purpose</th>
+<th>Tier</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>LED short-throw projector</td>
+<td>1</td>
+<td>Evening sharing, documentation review</td>
+<td>M</td>
+<td>Check lumens against brightness at dusk</td>
+</tr>
+<tr>
+<td>Projection screen / white sheet</td>
+<td>1</td>
+<td>Indoor or outdoor display</td>
+<td>M</td>
+<td></td>
+</tr>
+<tr>
+<td>AirPlay-compatible receiver</td>
+<td>1–2</td>
+<td>Wireless casting from iPads and the Mac</td>
+<td>M</td>
+<td></td>
+</tr>
+<tr>
+<td>Battery-powered PA / speaker</td>
+<td>1</td>
+<td>Presentations, community sharing</td>
+<td>M</td>
+<td></td>
+</tr>
+<tr>
+<td>Small audio mixer / interface</td>
+<td>1</td>
+<td>Route mics to the speaker and the recorder at once</td>
+<td>E</td>
+<td></td>
+</tr>
+<tr>
+<td>HDMI/USB-C adapter kit</td>
+<td>1</td>
+<td>Any device to any display</td>
+<td>M</td>
+<td>The most-forgotten item</td>
+</tr>
+<tr>
+<td>Outdoor display screen</td>
+<td>1</td>
+<td>Community exhibition at the site</td>
+<td>A</td>
+<td>High power; the projector covers most needs</td>
+</tr>
+<tr>
+<td>Clothesline and clips, frames for documentation panels</td>
+<td>set</td>
+<td>A physical gallery of learning</td>
+<td>M</td>
+<td>Making Learning Visible on site</td>
+</tr>
+</tbody>
+</table></div>
+<h3>8. Shelter and environment ("where there are no walls")</h3>
+<div class="tbl-wrap"><table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Qty</th>
+<th>Purpose</th>
+<th>Tier</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Canopy / tarp shelter with sides</td>
+<td>1–2</td>
+<td>Teaching space, rain cover, equipment shade</td>
+<td>M</td>
+<td></td>
+</tr>
+<tr>
+<td>Folding tables and stools / ground mats</td>
+<td>set</td>
+<td>Workstations</td>
+<td>M</td>
+<td></td>
+</tr>
+<tr>
+<td>Hard waterproof cases (sized to carry)</td>
+<td>6–10</td>
+<td>Transport and storage for electronics</td>
+<td>M</td>
+<td>One case per subsystem; label and colour-code</td>
+</tr>
+<tr>
+<td>Dry bags</td>
+<td>set</td>
+<td>Field carry</td>
+<td>M</td>
+<td></td>
+</tr>
+<tr>
+<td>Silica gel / desiccant packs, sealed bins</td>
+<td>set</td>
+<td>Humidity protection overnight</td>
+<td>M</td>
+<td>Humidity is the silent device killer</td>
+</tr>
+<tr>
+<td>USB / DC fans</td>
+<td>2–4</td>
+<td>Cool people and electronics</td>
+<td>E</td>
+<td></td>
+</tr>
+<tr>
+<td>Mosquito netting</td>
+<td>set</td>
+<td>Comfort and health</td>
+<td>M</td>
+<td></td>
+</tr>
+</tbody>
+</table></div>
+<h3>9. Safety and wellbeing ("where there is no doctor")</h3>
+<div class="tbl-wrap"><table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Qty</th>
+<th>Purpose</th>
+<th>Tier</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Wilderness first aid kit</td>
+<td>2</td>
+<td>Field medical response</td>
+<td>M</td>
+<td></td>
+</tr>
+<tr>
+<td>Wilderness first aid–trained adult</td>
+<td>1+</td>
+<td>Competent response</td>
+<td>M</td>
+<td>A staffing requirement, not equipment</td>
+</tr>
+<tr>
+<td>Water filtration / safe-water supply</td>
+<td>1</td>
+<td>Drinking water</td>
+<td>M</td>
+<td></td>
+</tr>
+<tr>
+<td>Risk assessment, emergency contacts, evacuation plan</td>
+<td>—</td>
+<td>Duty of care</td>
+<td>M</td>
+<td>Lives with the kit</td>
+</tr>
+<tr>
+<td>Sun and insect protection</td>
+<td>set</td>
+<td>Health</td>
+<td>M</td>
+<td></td>
+</tr>
+</tbody>
+</table></div>
+<h3>10. Maintenance and support ("where there is no technician")</h3>
+<div class="tbl-wrap"><table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Qty</th>
+<th>Purpose</th>
+<th>Tier</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Spares kit (cables, chargers, adapters, SD cards, fuses)</td>
+<td>1</td>
+<td>Field fixes</td>
+<td>M</td>
+<td>Two of everything that plugs in</td>
+</tr>
+<tr>
+<td>Tool and cleaning kit (screwdrivers, lens cloths, contact cleaner, tape)</td>
+<td>1</td>
+<td>Upkeep</td>
+<td>M</td>
+<td></td>
+</tr>
+<tr>
+<td>Laminated quick-start cards, one per subsystem</td>
+<td>set</td>
+<td>Anyone can set it up</td>
+<td>M</td>
+<td>Written and tested by students</td>
+</tr>
+<tr>
+<td>Check-in/check-out log and device numbering</td>
+<td>—</td>
+<td>Accountability, nothing left in the forest</td>
+<td>M</td>
+<td></td>
+</tr>
+<tr>
+<td>Deployment and teardown checklists</td>
+<td>—</td>
+<td>Consistent setup</td>
+<td>M</td>
+<td></td>
+</tr>
+<tr>
+<td>Repair and incident log</td>
+<td>—</td>
+<td>Learning from failures</td>
+<td>M</td>
+<td>Feeds the review cycle</td>
+</tr>
+<tr>
+<td>Student tech-lead roles</td>
+<td>2–4 students</td>
+<td>Shared ownership of the kit</td>
+<td>M</td>
+<td>An agency opportunity in its own right</td>
+</tr>
+</tbody>
+</table></div>
+<h3>11. Field library collection (library as host)</h3>
+<div class="tbl-wrap"><table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Qty</th>
+<th>Purpose</th>
+<th>Tier</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Curated field collection (field guides, picture books, reference titles)</td>
+<td>1 crate</td>
+<td>Inquiry starts on site, not after returning</td>
+<td>M</td>
+<td>Curated by the librarian for the unit</td>
+</tr>
+<tr>
+<td>Home- and community-language materials</td>
+<td>set</td>
+<td>Support every student's language profile</td>
+<td>M</td>
+<td>Include local and indigenous languages where possible</td>
+</tr>
+<tr>
+<td>Offline e-library on the content server</td>
+<td>—</td>
+<td>Digital collection with no connection</td>
+<td>E</td>
+<td>Pairs with the content server in section 3</td>
+</tr>
+<tr>
+<td>Offline Scratch and micro:bit editors, pre-installed</td>
+<td>—</td>
+<td>PYP coding, MYP design cycle</td>
+<td>E</td>
+<td></td>
+</tr>
+<tr>
+<td>Kit catalogue and check-out system (Library of Things model)</td>
+<td>—</td>
+<td>Every item numbered, logged and lendable</td>
+<td>M</td>
+<td>Prevents the kit becoming uncatalogued storage</td>
+</tr>
+<tr>
+<td>Field Acceptable Use Policy card</td>
+<td>1 per student</td>
+<td>Consent, photography of people and places, data, sharing</td>
+<td>M</td>
+<td>Digital citizenship in context</td>
+</tr>
+<tr>
+<td>Quiet-zone and noisy-zone signage / mats</td>
+<td>set</td>
+<td>Zone the site for the learning that needs to happen</td>
+<td>E</td>
+<td>Responds to <em>Ideal libraries</em> p. 5</td>
+</tr>
+</tbody>
+</table></div>
+<h3>12. Transport and logistics</h3>
+<div class="tbl-wrap"><table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Qty</th>
+<th>Purpose</th>
+<th>Tier</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Wheeled cases / folding wagon</td>
+<td>1–2</td>
+<td>Move the kit from vehicle to site</td>
+<td>M</td>
+<td>Check the trail: wheels or backpacks?</td>
+</tr>
+<tr>
+<td>Packing list with weights per case</td>
+<td>—</td>
+<td>Plan the carry</td>
+<td>M</td>
+<td></td>
+</tr>
+<tr>
+<td>Base-camp layout map</td>
+<td>—</td>
+<td>Where power, charging, shelter and display go</td>
+<td>M</td>
+<td></td>
+</tr>
+<tr>
+<td>Pre-trip test day at school</td>
+<td>—</td>
+<td>Full dry run of setup and teardown</td>
+<td>M</td>
+<td>Saves the first field day</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+<h2>Earlier brainstorm notes (retained for reference)</h2>
+<p><strong>Baseline infrastructure for remote sites.</strong> Lean, modular setups have replaced power-hungry desktop labs: LEO satellite terminals, outdoor wireless mesh, offline-first laptops and tablets, software simulation in place of fragile physical gear (e.g. Cisco Packet Tracer), offline content mirrors (offline Wikipedia, Khan Academy), solar plus battery, and passive cooling. See the World Bank's framework for physical learning environments.</p>
+<p><strong>Apple media rig gaps.</strong> The Apple setup needs:</p>
+<ul>
+<li>local content caching and MDM, so updates aren't pulled over satellite</li>
+<li>AirPlay receivers for the projector and screen</li>
+<li>an audio interface to route wireless mics</li>
+<li>a dedicated Wi-Fi 6 access point rather than the satellite router</li>
+<li>local NAS/SSD scratch storage for video</li>
+<li>a line-interactive UPS, because a short flicker restarts the satellite terminal and costs minutes of re-acquisition</li>
+</ul>
+<p><strong>Reference sources to evaluate:</strong></p>
+<ul>
+<li>World Bank, <em>The Right Framework for Physical Learning Environments</em>: https://www.worldbank.org/en/topic/education/publication/right-framework-physical-learning-environments</li>
+<li>Global Partnership for Education, Madagascar remote classrooms: https://www.globalpartnership.org/results/country-journeys/madagascar-going-great-lengths-build-classrooms-remote-areas</li>
+<li>Cisco blog, "25 years of empowerment in Panama": https://blogs.cisco.com/learning/25-years-of-empowerment-in-panama</li>
+</ul>
+<h2>3D model, tech inventory and field sites</h2>
+<p>The interactive model is this repository's <a href="index.html">index.html</a>, published with GitHub Pages. It has three tabs.</p>
+<p><strong>3D model.</strong> The default view is the classroom only. "Whole site" adds the 40 × 40 ft covered area, lockers, outdoor chalkboard, mobile tables and two walk-in pop-up museum cubes (string-grid walls and ceiling for clipped displays). Inside the room:</p>
+<ul>
+<li><strong>Hanging wipe boards:</strong> 76 boards in landscape, each 1′6″ wide × 1′ tall, on four rails.</li>
+<li><strong>Projection modes:</strong></li>
+<li>standard</li>
+<li>a central pull-down screen over the whiteboard, floor to ceiling, fed by a clip-in throw projector</li>
+<li>center + window screens</li>
+<li>the whole room as one projected display for an immersive exhibit</li>
+<li><strong>Ceiling tech grid:</strong></li>
+<li>drop projectors (any wall can be a projection space)</li>
+<li>directional mics for recording the room or video calls</li>
+<li>pull-down power drops</li>
+<li>clip lights</li>
+<li><strong>Starlink</strong> on the top rail.</li>
+<li><strong>Brought in as needed:</strong> hanging room dividers (wipe board on both sides) and two 75″ rolling screens.</li>
+<li><strong>Formations:</strong></li>
+<li>groups</li>
+<li>two groups (two hexagons)</li>
+<li>whole group (one long joined table)</li>
+<li>campfire (any wall)</li>
+<li>water holes</li>
+<li>caves: students spread out at tables, at the wall boards, in front of the projection and at the outside chalkboard</li>
+<li><strong>Student figures:</strong> translucent figures that can be switched on.</li>
+<li><strong>Lesson setups:</strong> only what the lesson needs goes on the tables.</li>
+</ul>
+<p><strong>Tech inventory.</strong> The kit runs from Level 0, where there is no power, to Level 4, a connected room. Each item lists its quantity, purpose, where it lives and when it is used.</p>
+<p><strong>Field sites.</strong> Illustrated mockups (not simulations) of the kit deployed at the nearby farm, waterfall, river, horse ranch, mountain and mangrove beach. Each gives a provocation, formation, kit, connection, IB theme and safety notes.</p>
+<p>Sizes not given in the brief are placeholders and are marked * in the model.</p>
+<h2>Next steps</h2>
+<ol start="0">
+<li>Locate the IB document <em>Teaching and learning with technology</em> (2015) and verify the technology summary.</li>
+<li>Review the inventory: add, cut and re-tier items.</li>
+<li>Map the kit to an IB learning pathway (PYP units of inquiry and Exhibition; MYP design cycle, sciences, personal project, service as action).</li>
+<li>Build the action plan chart: 4–5 setup priorities × PSP Environment/Learning requirement × leadership approach × intelligences, with research and a timeline.</li>
+<li>Verify power figures against spec sheets.</li>
+</ol>
+</main>
+</body>
+</html>

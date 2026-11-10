@@ -1,0 +1,402 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>MVC Action Plan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@700;800&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap">
+<style>
+/* Layout: the site's tab bar, then one readable column; wide tables scroll inside their own box */
+:root{
+  --bg:#edf0ee; --panel:#fafbfa; --ink:#16201c; --muted:#58655f; --line:#d0d8d4; --oxide:#a5432b; --signal:#c98c00;
+  --f-display:'Big Shoulders Stencil Display','Arial Narrow',Impact,sans-serif;
+  --f-body:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --f-mono:'IBM Plex Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root{ --bg:#0f1412; --panel:#161d1a; --ink:#e3eae6; --muted:#8f9d96; --line:#27312d; --oxide:#e0704f; --signal:#f0b429; color-scheme:dark; }
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.6 var(--f-body)}
+.tabs{display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding-block:12px;padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));border-bottom:1px solid var(--line)}
+.tabs .brand{font:800 20px/1 var(--f-display);margin-right:12px;letter-spacing:.02em;color:var(--ink);text-decoration:none}
+.tabs a{font:500 13px/1 var(--f-body);color:var(--muted);text-decoration:none;padding:8px 12px;border-radius:6px;border:1px solid transparent}
+.tabs a:hover{color:var(--ink)}
+.tabs a[aria-current="page"]{color:var(--ink);border-color:var(--line);background:var(--panel)}
+a:focus-visible{outline:2px solid var(--signal);outline-offset:2px}
+main{max-width:960px;margin:0 auto;padding-block:28px 64px;padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px))}
+.eyebrow{font:500 11px/1 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--oxide)}
+h1{font:800 46px/1 var(--f-display);margin:10px 0 14px;text-wrap:balance}
+h2{font:600 22px/1.25 var(--f-body);margin:40px 0 10px;padding-top:16px;border-top:2px solid var(--ink);text-wrap:balance}
+h3{font:600 17px/1.3 var(--f-body);margin:28px 0 6px}
+p,li{max-width:72ch}
+a{color:var(--oxide)}
+img{max-width:100%;height:auto;border:1px solid var(--line);border-radius:8px;background:#fff}
+.tbl-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:8px;background:var(--panel);margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:13.5px;min-width:640px}
+th,td{text-align:left;vertical-align:top;padding:9px 12px;border-bottom:1px solid var(--line)}
+th{font:600 11px/1.3 var(--f-mono);letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+tbody tr:last-child td{border-bottom:0}
+code{font-family:var(--f-mono);font-size:.92em}
+blockquote{margin:12px 0;padding:8px 14px;border-left:3px solid var(--oxide);background:var(--panel)}
+</style>
+</head>
+<body>
+<nav class="tabs" aria-label="Site">
+  <a class="brand" href="index.html">MVC</a>
+  <a href="index.html#model">3D model</a>
+  <a href="index.html#inventory">Tech inventory</a>
+  <a href="index.html#sites">Field sites</a>
+  <a href="plan.html" aria-current="page">Action plan</a>
+  <a href="notes.html">Notes</a>
+  <a href="https://teacherslens.github.io/ibec-mind-map/">Mind map</a>
+</nav>
+<main>
+<div class="eyebrow">IBECLP 1 · Mini action plan</div>
+<h1>Mini Action Plan: The Minimal Viable Classroom</h1>
+<p>Chris Davis · IBECLP 1, Fall 2026 (Western University) · Draft, November 9, 2026</p>
+<h2>Starting point</h2>
+<p>This plan turns an underused campus space into a Minimal Viable Classroom (MVC). Simple prototypes begin now, in November 2026, and the formal launch is in August 2027. The MVC will be a shared space for the PYP, the MYP and the community, and a launchpad for learning at eight nearby sites.</p>
+<p>The idea grew from teaching in a shipping-container classroom at Maglares Discovery School (MDS). Every classroom should hold only what serves learning. The MVC applies that rule strictly: only what is absolutely necessary, shaped by the constraints of the space. At MDS those constraints were partly intentional and partly budget. A pop-up or mobile classroom meets the same limit another way: you can't transport a whole classroom, but you can still set up an MVC.</p>
+<p>The frame is "Where there is no ___", after Werner's <em>Where There Is No Doctor</em> (1977). The room runs from where there is no power to the highest tech: a ceiling grid with drop-in projectors and microphones, and a room that can become one projected display. It is intentional, not low-tech. Nothing goes on a table unless it serves that lesson.</p>
+<p>The space serves several parts of the school. PYP classes use it for units of inquiry and the Exhibition. MYP classes use it for sciences, design, individuals and societies, and the personal and community projects. The library hosts and lends the kit, with a named technology lead for hardware. Families and the wider community use it for pop-up museum exhibitions.</p>
+<p>The working model is the <a href="index.html">MVC 3D model, tech inventory and field-site mockups</a>. Sizes in it are placeholders until the prototype site is chosen.</p>
+<h2>Action plan</h2>
+<p>Five practices take the school from a prototype to a launch. Each one closes a gap named against the IB <em>Programme standards and practices</em> (PSP, 2020) and draws on the leadership intelligences (Calnin et al., 2018).</p>
+<div class="tbl-wrap"><table>
+<thead>
+<tr>
+<th>Practice to develop</th>
+<th>IB requirement (PSP 2020)</th>
+<th>How I would lead it (actions and dates)</th>
+<th>Leadership intelligences</th>
+<th>Supporting research</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>1. Prototype the MVC in an underused campus space.</strong> Gap: no costed inventory, no total-cost plan, no data on how such a space performs.</td>
+<td>0201-05-0100 fund adequate resources · 0202-01-0300 effective learning spaces · 0202-01-0500 flexible, collaborative space design · 0202-02-0400 spaces that meet all students' needs · 0201-04-0200 data on operation and sustainability</td>
+<td>Nov–Dec 2026: audit underused spaces; choose one with students; log heat, humidity, noise and power for four weeks. Jan 2027: "Where there is no ___" design workshop; tiered budget with total cost of ownership. Feb–Apr 2027: build the MVP tier (ceiling grid, board rails, pack-away storage) for six formations. May 2027: present the costed prototype to the board. Measures: every item catalogued; set up and packed away in an agreed time; a full day on battery power.</td>
+<td>Strategic: one room becomes a model for the school's growth plan. Entrepreneurial: a lean prototype, using what the school has before buying. Reflective: decisions rest on the four-week data.</td>
+<td>Ries (2011), the minimum viable product; Barrett et al. (2019), infrastructure and learning; Thornburg (2013), campfire, watering hole and cave</td>
+</tr>
+<tr>
+<td><strong>2. Intentional tools: nothing on the table unless it serves the lesson.</strong> Gap: screen-time debates end in a ban or business as usual, and students' talk, sketches and notebooks go uncaptured.</td>
+<td>0403-05-0500 multiple technologies to aid and extend learning · 0404-02-0111 (PYP) document and analyse learning over time · 0402-01-0100 develop approaches to learning · 0403-01-0300 exploratory learning environments</td>
+<td>Dec 2026: co-create five lesson setups, each naming the minimum kit. Jan–Mar 2027: install the capture layer (document camera, table and ceiling mics, transcription, short-throw and clip-in projectors). Mar 2027: consent and privacy protocol for recording, written with students and linked to the academic integrity policy (0301-03). Apr–Jun 2027: pilot in two units. Measures: every unit planner names its setup and why; each student shows evidence in three modes (talk, sketch, writing) per unit.</td>
+<td>Pedagogical: the lesson decides the kit. Heuristic: judging each lesson's minimum; balancing capture with privacy. Reflective: captured work becomes evidence for reviewing practice.</td>
+<td>UNESCO (2023), technology only where it improves learning; Jewitt (2005) and IB (2018), multimodality; Giudici, Rinaldi &amp; Krechevsky (2001), documentation; Hattie &amp; Hamilton (2018), cargo cults</td>
+</tr>
+<tr>
+<td><strong>3. The classroom goes wherever we are.</strong> Gap: the prototype is fixed; field days need a portable kit, a day base and a shared procedure.</td>
+<td>0202-01-0600 an active library of people, places, collections and services · 0202-03-0100 / 0300 wellbeing · 0202-02-0400 access for all students · 0201-04-0100 documented procedures</td>
+<td>Feb 2027: pack the field cases (tarp kit, folding tables, laser projector, power station, Starlink Mini). Mar 2027: write the field manual, the school's own <em>Where There Is No Doctor</em> (risk-benefit template, ratios, first aid, setup and teardown). Mar 2027: the library runs check-out on the Library of Things model, with a named technology lead. Apr–May 2027: first day trips (farm, river). Measures: a day base up in under 45 minutes; every item returns; a risk assessment for every trip.</td>
+<td>Entrepreneurial: the library model repurposed; site partnerships. Heuristic: risk-benefit judgment in uncertain settings. Relational: ownership shared by library, teachers and students.</td>
+<td>IB (2018), <em>Ideal libraries</em>; Brussoni et al. (2015), risky outdoor play; Werner (1977)</td>
+</tr>
+<tr>
+<td><strong>4. Learn from our immediate places along an IB pathway.</strong> Gap: rich sites nearby (farm, waterfall, river, horse ranch, mountain, mangrove beach, museum, pueblo plaza) are used occasionally, with no progression from PYP to MYP.</td>
+<td>0202-05-0100 wider-community resources · 0403-03-0100 / 0200 local and global contexts · 0401-01-0200 vertical articulation · PYP 0402-06-0211 the Exhibition · MYP 0402-06-0221 personal and community projects; 0402-05-0221 service learning</td>
+<td>Nov 2026–Jan 2027: map each site (access, risk, partner, season, concepts). Feb 2027: a provocation bank that starts from the senses. Mar 2027: a vertical pathway from nearby day sites (early PYP) to multi-day and community work (MYP). Apr–Jun 2027: pilot two place-based units. Aug 2027: one site per grade per term in the launch plan.</td>
+<td>Pedagogical: provocation and documentation at the core of inquiry. Cultural: local knowledge of the land, students' identities and languages. Relational: landowners, families and experts as co-teachers.</td>
+<td>Sobel (2004), place-based education; Kuo, Barnes &amp; Jordan (2019), nature and learning</td>
+</tr>
+<tr>
+<td><strong>5. Communicate through documentation, not announcements.</strong> Gap: less screen time, outdoor learning and managed risk can look like "less school" to families.</td>
+<td>0201-04-0400 families understand the programme · 0202-05-0200 guardians contribute · 0401-03-0100 inform the community · 0202-03-0400 open communication · 0203-03-0100 teacher collaboration time</td>
+<td>Dec 2026: baseline survey and listening sessions, with low-pressure channels. Jan 2027: a shared rationale in the community's languages. Feb 2027 onward: a weekly post of real student work (past, present, future). May 2027: a family pop-up museum. Jun 2027: repeat the survey. Aug 2027: launch event. Measures: more families can explain the rationale; number of family and site partners.</td>
+<td>Relational: trust through consistency. Cultural: reading how different families engage. Strategic: one vision across audiences.</td>
+<td>Epstein et al. (2018); Kotter (1996); Meyer (2014)</td>
+</tr>
+</tbody>
+</table></div>
+<h2>Link to authorization</h2>
+<p>The five practices produce the evidence the IB looks for when it authorizes a school. The <em>Guide to school authorization</em> (IB, 2010, updated 2016) asks a school applying for candidacy to show it has costed implementation in a five-year budget; practice 1's tiered budget with total cost of ownership is that budget for the MVC. Its Standard B2 (resources and support) names the practices the MVC strengthens:</p>
+<ul>
+<li><strong>Dedicated time for collaborative planning and reflection:</strong> the fortnightly planning time in practice 5 and the shared unit planners in practices 2 and 4.</li>
+<li><strong>Learning environments, facilities and specialized equipment that support the programme:</strong> the MVC itself (practices 1 and 2).</li>
+<li><strong>A library that plays a central role:</strong> the library hosts and lends the kit (practice 3).</li>
+<li><strong>Using the community's resources and expertise:</strong> the eight field sites and their partners (practice 4).</li>
+<li><strong>Resources for the PYP Exhibition and the MYP personal project:</strong> the space, kit and sites are open to both (practice 4).</li>
+</ul>
+<p>At the verification visit, the IB team gathers evidence that requirements are met and notes practices beyond them. The MVC's catalogue, space data, logs and student documentation are that evidence.</p>
+<h2>How the leadership intelligences carry the plan</h2>
+<p>All seven intelligences (Calnin et al., 2018) are needed, but each one leads different practices. The table shows where each one leads (L) and where it supports (s). The notes below name the PSP practices each one activates and why it fits, in the pattern of my leadership intelligences mind map: the reading that defines it, and evidence from my own work.</p>
+<div class="tbl-wrap"><table>
+<thead>
+<tr>
+<th>Intelligence</th>
+<th>1. Prototype the MVC</th>
+<th>2. Intentional tools</th>
+<th>3. Classroom goes anywhere</th>
+<th>4. Immediate places</th>
+<th>5. Communication</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Strategic</td>
+<td>L</td>
+<td></td>
+<td></td>
+<td>s</td>
+<td>L</td>
+</tr>
+<tr>
+<td>Cultural</td>
+<td></td>
+<td></td>
+<td>s</td>
+<td>L</td>
+<td>L</td>
+</tr>
+<tr>
+<td>Entrepreneurial</td>
+<td>L</td>
+<td>s</td>
+<td>L</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Relational</td>
+<td></td>
+<td></td>
+<td>L</td>
+<td>L</td>
+<td>L</td>
+</tr>
+<tr>
+<td>Reflective</td>
+<td>L</td>
+<td>L</td>
+<td>s</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Heuristic</td>
+<td>s</td>
+<td>L</td>
+<td>L</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Pedagogical</td>
+<td></td>
+<td>L</td>
+<td>s</td>
+<td>L</td>
+<td></td>
+</tr>
+</tbody>
+</table></div>
+<h3>Strategic: vision into systems</h3>
+<p>Seeing the big picture and turning a shared vision into systems that outlast any one leader. In this plan it leads the prototype (1) and the communication plan (5), and shapes the PYP-to-MYP pathway (4).</p>
+<ul>
+<li><strong>0101-01-0100:</strong> mission, vision and strategy reflect the IB mission (Purpose).</li>
+<li><strong>0201-05-0100:</strong> fund adequate resources to implement the programme.</li>
+<li><strong>0201-04-0200:</strong> capture and use data on operation and sustainability.</li>
+<li><strong>0401-01-0200:</strong> articulate the curriculum horizontally and vertically.</li>
+<li><strong>0401-03-0100:</strong> inform the community of programme developments.</li>
+</ul>
+<p><strong>Why it fits:</strong> the MVC is designed as a system, not a project. A tiered budget with total cost of ownership, a phased timeline to August 2027, and one pathway from PYP to MYP keep the space alive when staff change. Prototyping first gives teachers a baseline before anything new is bought.</p>
+<p><strong>Evidence:</strong> "…responding appropriately to the present, creating the future and anticipating the consequences" (MacGilchrist et al., quoted in Calnin et al., 2018, p. 106). Dr. X, the school leader I interviewed, put the order plainly: "You have to establish consistency before you allow innovation."</p>
+<h3>Cultural: context and difference</h3>
+<p>Reading context and difference, and building intercultural understanding across the whole community. It leads the field-site pathway (4) and the communication plan (5), and supports the day bases (3).</p>
+<ul>
+<li><strong>0202-05-0100:</strong> use wider-community resources that aid and extend learning.</li>
+<li><strong>0403-03-0100:</strong> clear local and global connections in the curriculum.</li>
+<li><strong>0402-07-0100:</strong> opportunities to explore personal and cultural identities.</li>
+<li><strong>0402-07-0300:</strong> students develop their language profiles.</li>
+<li><strong>0301-04-0200:</strong> the language policy treats multilingualism as a resource (Culture).</li>
+</ul>
+<p><strong>Why it fits:</strong> the farm, the mangrove beach and the pueblo plaza make the host country the curriculum, not its backdrop. Outdoor learning and less screen time can read as "less school" to some families, so the rationale goes out in the community's languages and through student work they can see.</p>
+<p><strong>Evidence:</strong> "These places are not empty containers waiting for an imported curriculum to give them intellectual substance" (Cailey, 2026). Dr. X: "…if you can't tell where you are in the world by looking around the school, the school isn't representing its country."</p>
+<h3>Entrepreneurial: opportunity and change</h3>
+<p>Creative, discovery-driven engagement with opportunities, partnerships and change. It leads the prototype (1) and the portable kit (3), and supports the capture layer (2).</p>
+<ul>
+<li><strong>0202-01-0500:</strong> design learning spaces for flexibility and collaboration.</li>
+<li><strong>0202-01-0600:</strong> an active library of people, places, collections and services.</li>
+<li><strong>0202-01-0400:</strong> technologies that connect the community (Starlink, video calls).</li>
+<li><strong>0403-05-0500:</strong> multiple technologies to aid and extend learning.</li>
+<li><strong>0402-05-0100:</strong> students apply learning by taking action.</li>
+</ul>
+<p><strong>Why it fits:</strong> the plan reuses what the school already has, an underused space and the library, before buying. Farms, the ranch, the museum and the municipality become partners. Every purchase after the prototype must show impact in the pilot.</p>
+<p><strong>Evidence:</strong> Calnin et al. (2018, p. 107) single out "active, creative and discovery-driven engagement". Hattie and Hamilton (2018) set the limit: "that diversity must come with evidence of impact."</p>
+<h3>Relational: trust and care</h3>
+<p>Building trust and ethical relationships that make collaboration and professional risk-taking possible. It leads the field days (3), the site partnerships (4) and the communication plan (5).</p>
+<ul>
+<li><strong>0202-05-0200:</strong> meaningful opportunities for legal guardians to contribute.</li>
+<li><strong>0202-03-0400:</strong> open communication based on understanding and respect.</li>
+<li><strong>0203-03-0100:</strong> dedicated time for teachers to plan and reflect together.</li>
+<li><strong>0403-04-0100:</strong> teachers collaborate for a coherent learning experience.</li>
+<li><strong>0402-03-0300:</strong> opportunities for student voice.</li>
+</ul>
+<p><strong>Why it fits:</strong> managed outdoor risk, recording students and teachers trying new formations all depend on trust. Students co-design the space and write the use and consent rules; families become site hosts and exhibition audiences.</p>
+<p><strong>Evidence:</strong> trust is what encourages "a positive attitude to risk taking" (Tschannen-Moran, in Calnin et al., 2018, p. 108). From my own work: "Families do not need more information; they need a frame."</p>
+<h3>Reflective: evidence of impact</h3>
+<p>Evaluating practice and one's own impact, and being willing to question received wisdom. It leads the prototype (1) and the intentional-tools pilot (2), and supports the field manual (3).</p>
+<ul>
+<li><strong>0201-04-0300:</strong> use data on the quality of implementation.</li>
+<li><strong>0403-01-0200:</strong> monitor and evaluate inquiry-based teaching.</li>
+<li><strong>0404-02-0111 (PYP):</strong> document and analyse learning over time.</li>
+<li><strong>0402-02-0200:</strong> students reflect on their learner profile growth.</li>
+</ul>
+<p><strong>Why it fits:</strong> four weeks of space data, tech-use logs, repair and incident logs, and captured transcripts and photos give the June review real evidence. The same captures are student documentation, so reflection costs teachers less time.</p>
+<p><strong>Evidence:</strong> "Collect evidence to know thy impact" (Hattie &amp; Hamilton, 2018). From my recruitment forum: "…we trust our judgment, but we test it against evidence."</p>
+<h3>Heuristic: judgment in context</h3>
+<p>Sound judgment in complex, time-pressured situations: knowing when to act on experience and when to pause. It leads the intentional-tools rule (2) and the field days (3), and supports the prototype (1).</p>
+<ul>
+<li><strong>0202-03-0200:</strong> systems and policies attend to wellbeing (risk-benefit assessment).</li>
+<li><strong>0202-02-0400:</strong> use learning spaces to meet the needs of all students.</li>
+<li><strong>0403-05-0100:</strong> consider learner variability when planning.</li>
+<li><strong>0301-06-0300:</strong> policies consider physical and virtual spaces (Culture).</li>
+</ul>
+<p><strong>Why it fits:</strong> no rule decides what a lesson's minimum is, how close is too close to the river, or when recording helps more than it intrudes. The plan gives teachers a purpose test and a risk-benefit template, then trusts their judgment on the day.</p>
+<p><strong>Evidence:</strong> "everything seems to work somewhere and nothing everywhere" (Wiliam, quoted in Hattie &amp; Hamilton, 2018). Dr. X: "There's no such thing as a rule. You have to build for your context."</p>
+<h3>Pedagogical: leading learning</h3>
+<p>Leading the study of teaching and learning so the school works as a community of learners. It leads the intentional tools (2) and the place-based pathway (4), and supports the field days (3).</p>
+<ul>
+<li><strong>0403-01-0100:</strong> inquiry-based teaching and learning.</li>
+<li><strong>0403-01-0300:</strong> interactive, exploratory learning environments and play.</li>
+<li><strong>0401-02-0100:</strong> teachers plan units together.</li>
+<li><strong>0402-01-0100:</strong> develop approaches to learning (ATL).</li>
+<li><strong>0402-06-0211 (PYP) and 0402-06-0221 (MYP):</strong> the Exhibition, and the personal and community projects.</li>
+</ul>
+<p><strong>Why it fits:</strong> pedagogy drives the kit. Lesson setups, the campfire, water hole and cave formations, and multimodal capture all exist to make student thinking visible and to measure impact on students, not teacher performance.</p>
+<p><strong>Evidence:</strong> watch "not the teacher, but the impact of the teacher" (Hattie &amp; Hamilton, 2018). From my PYP reflection: "…PYP assessment leans toward monitoring and documenting rather than heavy measuring."</p>
+<h2>Timeline</h2>
+<p>Prototyping starts this month with what the school already has, and the formal launch is August 16, 2027, the start of the school year. Each phase tests a smaller version of the next.</p>
+<p><img alt="MVC timeline: five phases and four milestones, November 2026 to August 2027" src="plan/timeline.png" /></p>
+<p>The build and the pilot overlap on purpose: what the first units reveal shapes the last purchases before the board's budget is spent.</p>
+<p><strong>Simple prototypes for November and December 2026</strong></p>
+<ol>
+<li>Tape out a 40 × 8 ft footprint in the chosen space and teach one lesson with only that lesson's setup on the tables.</li>
+<li>Run a campfire: a half moon of chairs facing a borrowed projector, with one discussion recorded and transcribed.</li>
+<li>String one wall with cord and clips for a class display, the seed of the pop-up museum.</li>
+<li>Hold a day-base test on campus: a tarp, two tables and a power station for a full school day outdoors.</li>
+<li>Take one field visit to the farm or the river with a tote of kit and a borrowed laser projector, and note what was missing.</li>
+</ol>
+<h2>MYP technology and Raspberry Pi sensors</h2>
+<p>The MYP layer adds a sensing and making kit built on Raspberry Pi. Students build their own instruments, collect data in the room and at field sites, and read it on a local dashboard that works without the internet. The same kit serves PYP inquiry with simpler parts (micro:bit), so one investment covers several parts of the school. Quantities assume one class of up to 24 MYP students working in pairs or threes; models are a starting spec to confirm with a supplier.</p>
+<div class="tbl-wrap"><table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Qty</th>
+<th>Spec</th>
+<th>MYP use</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Raspberry Pi 5 kits (4 GB, case, power supply, microSD)</td>
+<td>8</td>
+<td>Runs Python, logs data, hosts a local dashboard</td>
+<td>Sciences B and C (inquiring and designing; processing and evaluating) · Design C (creating the solution)</td>
+</tr>
+<tr>
+<td>Raspberry Pi Pico W boards</td>
+<td>12</td>
+<td>Low-power loggers that run for days on a battery</td>
+<td>Long field deployments at the river, farm and mangrove beach</td>
+</tr>
+<tr>
+<td>Sensor sets (no-solder connectors)</td>
+<td>6 sets</td>
+<td>Temperature, humidity and pressure · soil moisture · waterproof water-temperature probe · pH and turbidity · light · sound level · air quality (particulates) · GPS</td>
+<td>Sciences fieldwork; individuals and societies (B investigating) on noise, air and land use</td>
+</tr>
+<tr>
+<td>Camera modules</td>
+<td>4</td>
+<td>Time-lapse and wildlife capture</td>
+<td>Sciences observation; Design documentation</td>
+</tr>
+<tr>
+<td>Weatherproof enclosures, stakes, solar power banks</td>
+<td>6</td>
+<td>Field stations that survive rain and humidity</td>
+<td>Design C and D (creating, evaluating)</td>
+</tr>
+<tr>
+<td>Breadboards, jumper wires, a soldering station</td>
+<td>class set + 1</td>
+<td>No-solder start; soldering for older MYP</td>
+<td>Design C</td>
+</tr>
+<tr>
+<td>Small 3D printer</td>
+<td>1</td>
+<td>Enclosures and prototypes, powered from a ceiling drop</td>
+<td>Design B and C (developing ideas, creating)</td>
+</tr>
+<tr>
+<td>micro:bit kits</td>
+<td>13</td>
+<td>The bridge from PYP coding to Raspberry Pi</td>
+<td>PYP inquiry; early MYP</td>
+</tr>
+<tr>
+<td>Local dashboard on a Raspberry Pi</td>
+<td>1</td>
+<td>Shows live data on the room's displays; syncs to the Mac mini hub; works offline</td>
+<td>Mathematics D (applying mathematics in real-life contexts)</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>How the space serves the school</strong></p>
+<ul>
+<li><strong>PYP:</strong> units of inquiry, the Exhibition, campfire storytelling and the field sites.</li>
+<li><strong>MYP:</strong> sciences and design investigations, interdisciplinary units, service as action, and the personal and community projects.</li>
+<li><strong>Library:</strong> hosts the kit and runs check-out, with a named technology lead for hardware and sensors.</li>
+<li><strong>Staff:</strong> the room doubles as a workshop and conference space, using the ceiling power drops, mics and screens.</li>
+<li><strong>Families and community:</strong> pop-up museum exhibitions in the room, in the covered area and in the pueblo plaza.</li>
+</ul>
+<h2>Leadership foresight</h2>
+<p>The biggest risk is a room that fills with kit nobody planned for. The lesson-setup rule and the catalogue are the guard against it. Other risks and how the plan meets them:</p>
+<ul>
+<li><strong>Implementation dip:</strong> the first prototypes and field days will be clumsy (Fullan, 2001). Time is budgeted for it, and short wins are celebrated (Kotter, 1996).</li>
+<li><strong>Sustainability:</strong> equipment needs a replacement cycle and a maintenance budget from year one, or it turns into storage.</li>
+<li><strong>People:</strong> no single champion or librarian carries the space; the library, a named technology lead and at least three trained teachers share it, avoiding the "super librarian" trap (IB, 2018).</li>
+<li><strong>Equity and access:</strong> every student takes part in field days; transport, mobility, cost and consent are planned per site (0202-02-0400).</li>
+<li><strong>Safety and permissions:</strong> a risk-benefit assessment for every trip; written permission to project in the museum and the plaza; site agreements with the farm and the ranch.</li>
+<li><strong>Privacy:</strong> recordings, transcripts and sensor data follow the consent protocol and stay on local storage.</li>
+<li><strong>Weather and seasons:</strong> field days are scheduled around the rainy and dry seasons, with an indoor fallback for each.</li>
+</ul>
+<h2>References</h2>
+<p>Check editions and author lists before submission; details marked from memory are approximate.</p>
+<ul>
+<li>Barrett, P., Treves, A., Shmis, T., Ambasz, D., &amp; Ustinova, M. (2019). <em>The impact of school infrastructure on learning: A synthesis of the evidence</em>. World Bank.</li>
+<li>Brussoni, M., et al. (2015). What is the relationship between risky outdoor play and health in children? A systematic review. <em>International Journal of Environmental Research and Public Health, 12</em>(6), 6423–6454.</li>
+<li>Cailey, R. J. (2026, October 31). The educational singularity. <em>Nomadic Notes</em>, LinkedIn.</li>
+<li>Calnin, G., Waterson, M., Richards, S., &amp; Fisher, D. (2018). Developing leaders for International Baccalaureate World Schools. <em>Journal of Research in International Education, 17</em>(2), 99–115.</li>
+<li>Davis, C. (2026). <em>IB leadership intelligences and measuring student learning in the PYP</em>; <em>Week 3 forum: Recruitment and leadership intelligences</em>; <em>Culture, context and stakeholder engagement in IB schools: Reflective responses</em>. IBEC Module 1 coursework.</li>
+<li>Dr. X (anonymised school leader). (2026, November 4). Interview by C. Davis [Transcript]. IBEC Module 1 school leader interview.</li>
+<li>Epstein, J. L., et al. (2018). <em>School, family, and community partnerships</em> (4th ed.). Corwin.</li>
+<li>Fullan, M. (2001). <em>Leading in a culture of change</em>. Jossey-Bass.</li>
+<li>Giudici, C., Rinaldi, C., &amp; Krechevsky, M. (Eds.). (2001). <em>Making learning visible</em>. Project Zero &amp; Reggio Children.</li>
+<li>Hattie, J., &amp; Hamilton, A. (2018). <em>Education cargo cults must die</em>. Corwin.</li>
+<li>International Baccalaureate Organization. (2010, updated 2016). <em>Guide to school authorization: Primary Years Programme</em>.</li>
+<li>International Baccalaureate Organization. (2015). <em>The integration of technology in the Diploma Programme</em> (research summary).</li>
+<li>International Baccalaureate Organization. (2018). <em>Ideal libraries: A guide for schools</em>.</li>
+<li>International Baccalaureate Organization. (2020). <em>Programme standards and practices</em>.</li>
+<li>Jewitt, C. (2005). Multimodality, "reading", and "writing" for the 21st century. <em>Discourse: Studies in the Cultural Politics of Education, 26</em>(3), 315–331.</li>
+<li>Kotter, J. P. (1996). <em>Leading change</em>. Harvard Business School Press.</li>
+<li>Kuo, M., Barnes, M., &amp; Jordan, C. (2019). Do experiences with nature promote learning? <em>Frontiers in Psychology, 10</em>, 305.</li>
+<li>Meyer, E. (2014). <em>The culture map</em>. PublicAffairs.</li>
+<li>Ries, E. (2011). <em>The lean startup</em>. Crown Business.</li>
+<li>Sobel, D. (2004). <em>Place-based education</em>. Orion Society.</li>
+<li>Thornburg, D. (2013). <em>From the campfire to the holodeck</em>. Jossey-Bass.</li>
+<li>UNESCO. (2023). <em>Global education monitoring report 2023: Technology in education: A tool on whose terms?</em></li>
+<li>Werner, D. (1977). <em>Where there is no doctor</em>. Hesperian.</li>
+</ul>
+</main>
+</body>
+</html>
