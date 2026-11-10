@@ -1,0 +1,1980 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Minimal Viable Classroom Model</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@700;800&family=Caveat:wght@600&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout: a working tool — 3D viewport on the left, control and spec rail on the right; stacks to one column on phones */
+:root{
+  --bg:#edf0ee;
+  --panel:#fafbfa;
+  --ink:#16201c;
+  --muted:#58655f;
+  --line:#d0d8d4;
+  --oxide:#a5432b;
+  --signal:#c98c00;
+  --scene:#dae2de;
+  --ground:#b5beb2;
+  --l0:#c9a874; --l1:#d99a00; --l2:#3c7a6b; --l3:#2f6fa8; --l4:#3b3f8f;
+  --f-display:'Big Shoulders Stencil Display','Arial Narrow',Impact,sans-serif;
+  --f-body:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --f-mono:'IBM Plex Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0f1412; --panel:#161d1a; --ink:#e3eae6; --muted:#8f9d96; --line:#27312d;
+    --oxide:#e0704f; --signal:#f0b429; --scene:#0c110f; --ground:#27302b;
+    --l0:#d8b98a; --l1:#f0b429; --l2:#5fb39f; --l3:#6aa6e0; --l4:#9a9ef0;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0f1412; --panel:#161d1a; --ink:#e3eae6; --muted:#8f9d96; --line:#27312d;
+  --oxide:#e0704f; --signal:#f0b429; --scene:#0c110f; --ground:#27302b;
+  --l0:#d8b98a; --l1:#f0b429; --l2:#5fb39f; --l3:#6aa6e0; --l4:#9a9ef0;
+  color-scheme:dark;
+}
+html,body{height:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:14px;line-height:1.45}
+*{box-sizing:border-box}
+.shell{height:100%;display:flex;flex-direction:column}
+.tabs{display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding-block:12px 0;padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px))}
+.tabs .brand{font:800 20px/1 var(--f-display);margin-right:12px;letter-spacing:.02em}
+.tabs a{font:500 13px/1 var(--f-body);color:var(--muted);text-decoration:none;padding:8px 12px;border-radius:6px;border:1px solid transparent}
+.tabs a:hover{color:var(--ink)}
+.tabs a[aria-current="page"]{color:var(--ink);border-color:var(--line);background:var(--panel)}
+.tabs a:focus-visible{outline:2px solid var(--signal);outline-offset:2px}
+.page[hidden]{display:none!important}
+.doc{flex:1;min-height:0;overflow:auto;padding-block:20px 40px;padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px))}
+.doc-inner{max-width:1120px;margin:0 auto;display:flex;flex-direction:column;gap:22px}
+.doc h1{font-size:44px}
+.spectrum{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px}
+.spectrum div{padding:10px 10px 12px;border-top:6px solid var(--c);background:var(--panel);border-radius:0 0 6px 6px;min-width:0}
+.spectrum b{display:block;font:500 11px/1 var(--f-mono);color:var(--muted);letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px}
+.spectrum span{font-weight:600;font-size:13px}
+.spectrum-ends{display:flex;justify-content:space-between;font:500 12px/1 var(--f-mono);color:var(--muted);margin-top:6px}
+.lvl h2{display:flex;align-items:center;gap:8px;font-size:12px}
+.lvl h2 i{width:12px;height:12px;border-radius:3px;background:var(--c);display:inline-block}
+.lvl p.lead{margin:-4px 0 10px;color:var(--muted);max-width:70ch}
+.tbl-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:8px;background:var(--panel)}
+table{border-collapse:collapse;width:100%;min-width:720px;font-size:13px}
+th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font:600 11px/1.2 var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+tbody tr:last-child td{border-bottom:0}
+td.q{font-family:var(--f-mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+td.n{font-weight:600}
+.chip{display:inline-block;font:500 11px/1 var(--f-body);padding:4px 7px;border-radius:99px;border:1px solid var(--line);margin:0 4px 4px 0;color:var(--ink);white-space:nowrap}
+.sites{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.site{border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--panel);display:flex;flex-direction:column;min-width:0}
+.site svg{display:block;width:100%;height:auto;max-width:100%}
+.site .body{padding:14px 16px 16px;display:grid;gap:8px}
+.site h2{font:800 26px/1 var(--f-display);color:var(--ink);text-transform:none;letter-spacing:.01em;margin:0}
+.site .prov{font-style:italic;margin:0}
+.site dl{margin:0;display:grid;grid-template-columns:96px minmax(0,1fr);gap:6px 12px;font-size:13px}
+.site dt{font:500 11px/1.5 var(--f-mono);color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.site dd{margin:0}
+.app{
+  flex:1;min-height:0;
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 360px;
+  gap:16px;
+  padding-block:16px;
+  padding-left:max(16px, env(safe-area-inset-left, 0px));
+  padding-right:max(16px, env(safe-area-inset-right, 0px));
+}
+.stage{position:relative;min-width:0;min-height:0;border-radius:10px;overflow:hidden;border:1px solid var(--line);background:var(--scene)}
+.stage canvas{display:block;width:100%;height:100%;touch-action:none;cursor:grab;outline:none}
+.views{position:absolute;top:12px;left:12px;right:12px;display:flex;flex-wrap:wrap;gap:6px;pointer-events:none;z-index:2}
+.views button{pointer-events:auto}
+.hint{position:absolute;left:12px;right:12px;bottom:10px;font:400 11.5px/1.4 var(--f-mono);color:var(--muted);pointer-events:none;z-index:2;text-wrap:balance}
+.hint span{background:var(--panel);padding:3px 7px;border-radius:4px;border:1px solid var(--line);display:inline-block}
+.labels{position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:1}
+.lbl{position:absolute;left:0;top:0;white-space:nowrap;font:500 11px/1 var(--f-body);color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:4px 6px;box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.lbl b{font:500 10.5px/1 var(--f-mono);color:var(--muted);margin-left:5px}
+.lbl.sel{border-color:var(--signal);box-shadow:0 0 0 1px var(--signal)}
+.msg{position:absolute;inset:0;display:grid;place-items:center;padding:24px;text-align:center;color:var(--muted)}
+.msg[hidden]{display:none}
+
+.btn{font:500 12.5px/1 var(--f-body);padding:7px 11px;border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:6px;cursor:pointer}
+.btn:hover{border-color:var(--muted)}
+.btn[aria-pressed="true"]{background:var(--ink);color:var(--panel);border-color:var(--ink)}
+.btn:focus-visible,.chk input:focus-visible{outline:2px solid var(--signal);outline-offset:2px}
+
+.rail{min-width:0;min-height:0;overflow:auto;display:flex;flex-direction:column;gap:18px;padding-right:2px}
+.eyebrow{font:500 11px/1 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--oxide)}
+h1{font:800 40px/0.95 var(--f-display);letter-spacing:.01em;margin:8px 0 10px;text-wrap:balance}
+.lede{margin:0;color:var(--muted);max-width:60ch}
+h2{font:600 11px/1 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 10px}
+h3{font:600 12px/1.2 var(--f-body);margin:12px 0 6px;color:var(--muted)}
+.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px 12px}
+.stat{border-top:2px solid var(--ink);padding-top:6px}
+.stat .v{font:500 20px/1.1 var(--f-mono);font-variant-numeric:tabular-nums}
+.stat .k{font-size:11.5px;color:var(--muted)}
+.toggles{display:grid;gap:7px}
+.chk{display:flex;align-items:center;gap:9px;cursor:pointer}
+.chk input{accent-color:var(--oxide);width:16px;height:16px;margin:0}
+.sel-card{border:1px solid var(--signal);border-radius:8px;padding:12px;display:grid;gap:10px;background:var(--panel)}
+.sel-card .name{font-weight:600}
+.sel-card .pos{font:400 12px/1.4 var(--f-mono);color:var(--muted);font-variant-numeric:tabular-nums}
+.row{display:flex;flex-wrap:wrap;gap:6px}
+.desc{margin:10px 0 6px;max-width:60ch}
+.sub{margin:0;font-size:12.5px;color:var(--muted)}
+.sub b{color:var(--ink);font-weight:500}
+.spec{margin:0;display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:12px}
+.spec dt,.spec dd{padding:7px 0;border-bottom:1px solid var(--line);margin:0}
+.spec dt{min-width:0}
+.spec dt small{display:block;color:var(--muted);font-size:11.5px}
+.spec dd{font:400 12.5px/1.45 var(--f-mono);font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
+.note{font-size:12px;color:var(--muted);margin:8px 0 0}
+
+@media (max-width: 880px){
+  html,body{height:auto}
+  .shell{height:auto}
+  .doc{overflow:visible}
+  .sites{grid-template-columns:minmax(0,1fr)}
+  .spectrum{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .app{height:auto;grid-template-columns:minmax(0,1fr)}
+  .stage{height:66vh;min-height:360px}
+  .rail{overflow:visible}
+  h1{font-size:34px}
+}
+</style>
+
+</head>
+<body>
+<div class="shell">
+<nav class="tabs" aria-label="Pages">
+  <span class="brand">MVC</span>
+  <a href="#model" data-page="model">3D model</a>
+  <a href="#inventory" data-page="inventory">Tech inventory</a>
+  <a href="#sites" data-page="sites">Field sites</a>
+</nav>
+<div class="app page" id="page-model">
+  <div class="stage" id="stage">
+    <div class="views" role="group" aria-label="Camera views">
+      <button class="btn" data-view="overview" aria-pressed="true">Overview</button>
+      <button class="btn" data-view="plan" aria-pressed="false">Plan</button>
+      <button class="btn" data-view="doorway" aria-pressed="false">Doorway</button>
+      <button class="btn" data-view="student" aria-pressed="false">Student seat</button>
+      <button class="btn" data-view="teacher" aria-pressed="false">Teacher</button>
+      <button class="btn" data-view="outside" aria-pressed="false">Outside</button>
+      <button class="btn" data-view="covered" aria-pressed="false">Covered area</button>
+    </div>
+    <div class="labels" id="labels" aria-hidden="true"></div>
+    <div class="hint"><span>Drag to spin · scroll or pinch to zoom · right-drag or two fingers to pan · drag tables, chairs or the desk to move them</span></div>
+    <div class="msg" id="stage-msg" hidden>The 3D viewer couldn't load. Check your connection and reload the page.</div>
+  </div>
+
+  <aside class="rail">
+    <header>
+      <div class="eyebrow">40 ft container · prototype 01</div>
+      <h1>Minimal Viable Classroom</h1>
+      <p class="lede">An intentional 40 × 8 ft room and launchpad for learning outdoors. Nothing on the tables unless it serves the lesson. Switch formations and lesson setups, step inside, move the furniture, and turn on the whole site to see the covered area.</p>
+    </header>
+
+    <section aria-label="Key figures">
+      <div class="stats">
+        <div class="stat"><div class="v" id="st-area">320</div><div class="k">sq ft inside</div></div>
+        <div class="stat"><div class="v" id="st-cover">1,600</div><div class="k">sq ft covered area</div></div>
+        <div class="stat"><div class="v" id="st-seats">12 + 1</div><div class="k">students + teacher</div></div>
+        <div class="stat"><div class="v" id="st-boards">76</div><div class="k">hanging wipe boards</div></div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Formation</h2>
+      <div class="row" id="forms" role="group" aria-label="Formations"></div>
+      <p class="desc" id="form-desc"></p>
+      <div id="camp-opts" hidden>
+        <h3>Campfire wall</h3>
+        <div class="row" id="foci" role="group" aria-label="Campfire wall"></div>
+        <h3>Teacher desk</h3>
+        <div class="row" id="deskmodes" role="group" aria-label="Teacher desk position"></div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Lesson setup</h2>
+      <div class="row" id="setups" role="group" aria-label="Lesson setups"></div>
+      <p class="desc" id="setup-desc"></p>
+      <p class="sub">On the tables <b id="setup-items"></b></p>
+    </section>
+
+    <section>
+      <h2>Projection</h2>
+      <div class="row" id="pmodes" role="group" aria-label="Projection"></div>
+      <p class="desc" id="pmode-desc"></p>
+    </section>
+
+    <section id="sel-wrap" hidden>
+      <h2>Selected</h2>
+      <div class="sel-card">
+        <div>
+          <div class="name" id="sel-name">Table 1</div>
+          <div class="pos" id="sel-pos"></div>
+        </div>
+        <div class="row">
+          <button class="btn" id="rot-l" type="button">Rotate −30°</button>
+          <button class="btn" id="rot-r" type="button">Rotate +30°</button>
+          <button class="btn" id="desel" type="button">Done</button>
+        </div>
+        <div class="pos">Keys: arrows nudge 6″ · R rotates · Esc deselects</div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Show</h2>
+      <div class="toggles">
+        <label class="chk"><input type="checkbox" id="t-site"> Whole site: covered area, lockers, chalkboard, pop-up museum</label>
+        <label class="chk"><input type="checkbox" id="t-dividers"> Hanging room dividers</label>
+        <label class="chk"><input type="checkbox" id="t-screens"> Large rolling screens</label>
+        <label class="chk"><input type="checkbox" id="t-figs"> Student figures (translucent)</label>
+        <label class="chk"><input type="checkbox" id="t-drops"> Power drops pulled down</label>
+        <label class="chk"><input type="checkbox" id="t-cut" checked> Fade walls between me and the room</label>
+        <label class="chk"><input type="checkbox" id="t-roof"> Container roof</label>
+        <label class="chk"><input type="checkbox" id="t-canopy"> Covered-area posts and roof</label>
+        <label class="chk"><input type="checkbox" id="t-boards" checked> Hanging wipe boards</label>
+        <label class="chk"><input type="checkbox" id="t-ceil" checked> Ceiling tech grid</label>
+        <label class="chk"><input type="checkbox" id="t-proj" checked> Projectors on</label>
+        <label class="chk"><input type="checkbox" id="t-labels" checked> Labels</label>
+        <label class="chk"><input type="checkbox" id="t-grid" checked> 1 ft floor grid</label>
+      </div>
+    </section>
+
+    <section>
+      <h2>What's in the space</h2>
+      <dl class="spec" id="spec"></dl>
+      <p class="note">* Size assumed. The brief gave the position, not the dimension.</p>
+      <div class="row" style="margin-top:12px">
+        <button class="btn" id="reset" type="button">Reset furniture</button>
+      </div>
+    </section>
+  </aside>
+</div>
+<main class="doc page" id="page-inventory" hidden>
+  <div class="doc-inner">
+    <header>
+      <div class="eyebrow">Launchpad kit · where it lives and when it comes out</div>
+      <h1>Tech Inventory</h1>
+      <p class="lede">The room runs from the lowest tech to the highest: from where there is no ______ to a connected studio that records the whole room. Everything lives in the lockers, on the ceiling grid, on the charging cart or in the field cases, and comes out only when the lesson needs it. Quantities are a starting suggestion.</p>
+    </header>
+    <section aria-label="Tech spectrum">
+      <div class="spectrum" id="spectrum"></div>
+      <div class="spectrum-ends"><span>Where there is no ______</span><span>Highest tech</span></div>
+    </section>
+    <div id="inventory"></div>
+  </div>
+</main>
+
+<main class="doc page" id="page-sites" hidden>
+  <div class="doc-inner">
+    <header>
+      <div class="eyebrow">The container as launchpad</div>
+      <h1>Field Sites</h1>
+      <p class="lede">The container is the prototype space and the launchpad. Each mockup shows a day base where students can spend a whole day: shade, tables and power, using shelter that is already there (a barn's covered area, a stable porch, a beach palapa, a museum room, the plaza's arcade) or a tarp fly where there is none. A battery laser projector goes to every site, and each site uses a formation from the room.</p>
+    </header>
+    <div class="sites" id="sites"></div>
+  </div>
+</main>
+
+</div>
+
+<script>
+(function(){
+  /* ---------- Page routing (#model, #inventory, #sites) ---------- */
+  const PAGES = ['model', 'inventory', 'sites'];
+  function route(){
+    const key = (location.hash || '').replace('#', '');
+    const page = PAGES.includes(key) ? key : 'model';
+    PAGES.forEach(k => { document.getElementById('page-' + k).hidden = k !== page; });
+    document.querySelectorAll('.tabs a').forEach(a => { if (a.dataset.page === page) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); });
+    window.dispatchEvent(new Event('mvc:page'));
+  }
+  window.addEventListener('hashchange', route);
+
+  /* ---------- Tech inventory ---------- */
+  const LEVELS = [
+    { n:0, name:'Where there is no power', short:'No power', c:'var(--l0)', lead:'Works anywhere, every time. The default: if a lesson can run at this level, it does.', items:[
+      ['Mini whiteboards and markers', '13', 'Answer, sketch and hold up', 'Lockers', ['Campfire', 'Water holes', 'Field']],
+      ['Hanging wipe boards (landscape)', '76', '1′6″ × 1′ thinking spaces on the wall rails', 'Wall rails', ['Caves', 'Campfire']],
+      ['Sketchpads, notebooks, pencils, sticky notes', 'class set', 'Physical thinking first', 'Lockers', ['All formations']],
+      ['Outdoor chalkboard and chalk', '1', 'Provocations and caves outside', 'Door wall, outside', ['Caves', 'Field']],
+      ['String grids, clothespins and clips', '2 cubes + 6 frames', 'Pop-up museum walls and twig-frame nature looms', 'Lockers', ['Museum', 'Field']],
+      ['Hand lenses, field guides, clipboards', '13', 'Close looking and recording', 'Field cases', ['Field']],
+      ['Foldable sit mats', '13', 'A campfire anywhere', 'Field cases', ['Campfire', 'Field']],
+      ['Day-base tarp kit (tarps, poles, guy lines, stakes, sandbags)', '2', 'Shade and rain cover where there is no shelter', 'Field cases', ['Field']],
+      ['Folding field tables and benches', '4 + 4', 'A day base anywhere', 'Field cases', ['Field']]
+    ]},
+    { n:1, name:'Low power', short:'Low power', c:'var(--l1)', lead:'Light, power and safety that run on a battery.', items:[
+      ['Clip lights (USB, battery)', '8', 'Light a board, a table or a display', 'Ceiling grid, dividers', ['All formations', 'Museum']],
+      ['Portable power station + folding solar', '2', 'Power where there is no outlet', 'Field cases', ['Field']],
+      ['Headlamps and two-way radios', '13 / 6', 'Safety and communication off site', 'Field cases', ['Field']],
+      ['Satellite messenger', '1', 'Emergency contact with no signal', 'Field cases', ['Field']]
+    ]},
+    { n:2, name:'Capture', short:'Capture', c:'var(--l2)', lead:'Tools that capture how students think: talk, sketches, notebooks and data.', items:[
+      ['iPads in rugged cases', '12 + 1', 'Photo, video, sketching, photo-to-text', 'Charging cart', ['All formations', 'Field']],
+      ['Document camera', '1', 'Project sketches and sticky notes to annotate together', 'Teacher desk', ['Campfire']],
+      ['Table microphones', '4', 'Record and transcribe group talk', 'Lockers', ['Water holes']],
+      ['Wireless lav mics and audio recorders', '2 / 2', 'Interviews and soundscapes', 'Field cases', ['Field']],
+      ['Sensors and data loggers (temperature, water, soil), micro:bit kits', '1 kit', 'Field data and student-built sensors', 'Field cases', ['Field', 'Water holes']],
+      ['Trail cameras and an action camera', '3 / 1', 'Observation while no one is there', 'Field cases', ['Field']]
+    ]},
+    { n:3, name:'Create and show', short:'Create and show', c:'var(--l3)', lead:'Making, editing and putting work on the wall.', items:[
+      ['MacBooks', '6', 'Editing, writing and coding, one per pair', 'Charging cart', ['Water holes', 'Caves']],
+      ['Short-throw projector', '1', 'The main projection wall beside the whiteboard', 'Door-wall shelf', ['Campfire']],
+      ['Clip-in ceiling projectors (throw)', '7', 'Turn any wall, screen or the whole room into a projection', 'Ceiling grid', ['Campfire', 'Museum']],
+      ['Pull-down screens, floor to ceiling', '3', 'Over the whiteboard for one big central display, and over both windows', 'Ceiling grid', ['Campfire', 'Museum']],
+      ['Large rolling screens (75″)', '2', 'Extra displays brought in as needed', 'Rolled in from storage', ['Campfire', 'Water holes']],
+      ['AirPlay receivers', '4', 'Cast from any iPad or Mac to any display', 'With each display', ['All formations']],
+      ['Portable laser projectors (battery)', '2', 'Bright, focus-free projection onto a barn wall, rock face, sheet or tarp at field sites', 'Field cases', ['Field', 'Campfire']],
+      ['Projection sheets, clips and a tripod screen', '3 + 1', 'A surface wherever the class is', 'Field cases', ['Field']],
+      ['Portable photo printer', '1', 'Make digital work physical for displays', 'Lockers', ['Museum']],
+      ['Battery PA speaker', '1', 'Sharing outdoors and at exhibitions', 'Lockers', ['Field', 'Museum']]
+    ]},
+    { n:4, name:'Connected room', short:'Connected', c:'var(--l4)', lead:'The highest tech: a room that records itself and reaches the world, and still works offline.', items:[
+      ['Starlink satellite internet', '1 + 1 Mini', 'Uplink on the container; the Mini travels to field sites', 'Container top rail / field case', ['All formations', 'Field']],
+      ['Wi-Fi 6 access point and PoE switch', '1', 'Local network that works without the uplink', 'Ceiling grid', ['All formations']],
+      ['Mac mini hub: content caching, device management, file server', '1', 'Updates download once and are shared locally', 'Lockers (rack)', ['All formations']],
+      ['Shared storage (NAS or SSD) and backup drives', '1 + 2', 'Video and documentation stay local', 'Lockers (rack)', ['All formations']],
+      ['Directional ceiling microphones', '3', 'Record the whole room at once; video conferencing', 'Ceiling grid', ['Campfire', 'Conference']],
+      ['Conference camera', '1', 'Video calls with experts and other classes', 'Rolling screen', ['Campfire', 'Conference']],
+      ['Transcription and photo-to-text apps (offline-capable)', '—', 'Talk and handwriting become searchable text', 'iPads and Macs', ['All formations']],
+      ['Line-interactive UPS', '1', 'Keeps the network alive through power flickers', 'Lockers (rack)', ['All formations']]
+    ]}
+  ];
+  const INFRA = { name:'Room infrastructure', c:'var(--muted)', lead:'Built into the space so the room can change shape.', items:[
+    ['Ceiling tech grid', '1', 'Drop points every 4′ for lights, projectors, mics and power', 'Ceiling', ['All formations']],
+    ['Pull-down power drops', '6', 'Power for maker work, extended workshops and conferences', 'Ceiling grid', ['Maker', 'Workshop', 'Conference']],
+    ['Hanging room dividers, wipe board both sides', '2', 'Split the room and add board space', 'Ceiling grid', ['Water holes', 'Caves']],
+    ['Wipe board wall', '1', 'A big writing surface under the projector shelf, behind the teacher desk', 'Door wall', ['Campfire', 'Water holes']],
+    ['Wall rails for hanging boards', '4 rows', 'Every free wall becomes a thinking surface', 'End walls and door wall', ['Caves']],
+    ['Weatherproof lockers', '7', 'Student and classroom materials', 'Outside the door wall', ['All formations']],
+    ['Mobile work tables on casters', '4', 'Movable outdoor work surfaces with whiteboard tops', 'Covered area', ['Caves', 'Museum']],
+    ['Pop-up museum cubes', '2', 'Walk-in exhibitions: string-grid walls and ceiling for clipped displays', 'Covered area', ['Museum']]
+  ]};
+
+  const esc = t => String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;');
+  document.getElementById('spectrum').innerHTML = LEVELS.map(l => `<div style="--c:${l.c}"><b>Level ${l.n}</b><span>${esc(l.short)}</span></div>`).join('');
+  function table(items){
+    return `<div class="tbl-wrap"><table><thead><tr><th>Item</th><th>Qty</th><th>What it's for</th><th>Where it lives</th><th>Used in</th></tr></thead><tbody>${
+      items.map(([n, q, w, l, u]) => `<tr><td class="n">${esc(n)}</td><td class="q">${esc(q)}</td><td>${esc(w)}</td><td>${esc(l)}</td><td>${u.map(x => `<span class="chip">${esc(x)}</span>`).join('')}</td></tr>`).join('')
+    }</tbody></table></div>`;
+  }
+  document.getElementById('inventory').innerHTML =
+    LEVELS.map(l => `<section class="lvl" style="--c:${l.c}"><h2><i></i>Level ${l.n} · ${esc(l.name)}</h2><p class="lead">${esc(l.lead)}</p>${table(l.items)}</section>`).join('') +
+    `<section class="lvl" style="--c:${INFRA.c}"><h2><i></i>${esc(INFRA.name)}</h2><p class="lead">${esc(INFRA.lead)}</p>${table(INFRA.items)}</section>`;
+
+  /* ---------- Field site mockups: a day base at each site (illustrations, not simulations) ---------- */
+  function rng(seed){ let s = seed; return () => (s = (s * 16807) % 2147483647) / 2147483647; }
+  const sky = (id, a, b) => `<defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${a}"/><stop offset="1" stop-color="${b}"/></linearGradient></defs><rect width="640" height="360" fill="url(#${id})"/>`;
+  const ground = (y, c) => `<rect y="${y}" width="640" height="${360 - y}" fill="${c}"/>`;
+  const tree = (x, y, s, c) => `<g transform="translate(${x} ${y}) scale(${s})"><rect x="-3" y="-10" width="6" height="22" fill="#6b4a2f"/><circle cx="0" cy="-24" r="18" fill="${c}"/><circle cx="-12" cy="-14" r="12" fill="${c}"/><circle cx="12" cy="-14" r="12" fill="${c}"/></g>`;
+  const label = (x, y, t) => `<g><rect x="${x}" y="${y - 13}" width="${t.length*6.1 + 12}" height="18" rx="4" fill="#ffffff" fill-opacity=".93"/><text x="${x + 6}" y="${y}" font-size="11" font-family="IBM Plex Sans, system-ui, sans-serif" fill="#16201c">${t}</text></g>`;
+  const shadowE = (cx, cy, rx, ry) => `<ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" fill="#000" opacity=".12"/>`;
+  function ftable(x, y, w){
+    w = w || 62;
+    return `<g>${shadowE(x + w/2, y + 22, w/2 + 4, 4)}<rect x="${x + 4}" y="${y + 16}" width="${w - 8}" height="4" fill="#8a6a48"/><rect x="${x}" y="${y}" width="${w}" height="6" rx="2" fill="#f2efe6" stroke="#6f6a60" stroke-width="1.5"/><line x1="${x + 5}" y1="${y + 6}" x2="${x + 5}" y2="${y + 22}" stroke="#2f3533" stroke-width="2"/><line x1="${x + w - 5}" y1="${y + 6}" x2="${x + w - 5}" y2="${y + 22}" stroke="#2f3533" stroke-width="2"/></g>`;
+  }
+  function tarpFly(x0, x1, top, base, color, inner){
+    const dx = 26, dy = 16;
+    return `<g>${shadowE((x0 + x1)/2 + 12, base - 4, (x1 - x0)/2 + 18, 10)}
+      <line x1="${x0 + dx}" y1="${top - dy}" x2="${x0 + dx}" y2="${base - 14}" stroke="#3a4144" stroke-width="2.5"/><line x1="${x1 + dx}" y1="${top - dy}" x2="${x1 + dx}" y2="${base - 14}" stroke="#3a4144" stroke-width="2.5"/>
+      ${inner || ''}
+      <polygon points="${x0},${top} ${x1},${top} ${x1 + dx},${top - dy} ${x0 + dx},${top - dy}" fill="${color}" stroke="#00000033" stroke-width="1"/>
+      <rect x="${x0}" y="${top}" width="${x1 - x0}" height="5" fill="${color}" opacity=".75"/>
+      <line x1="${x0}" y1="${top}" x2="${x0}" y2="${base}" stroke="#3a4144" stroke-width="3"/><line x1="${x1}" y1="${top}" x2="${x1}" y2="${base}" stroke="#3a4144" stroke-width="3"/>
+      <line x1="${x0}" y1="${top}" x2="${x0 - 26}" y2="${base + 4}" stroke="#555" stroke-width=".8"/><line x1="${x1}" y1="${top}" x2="${x1 + 26}" y2="${base + 4}" stroke="#555" stroke-width=".8"/></g>`;
+  }
+  function hull(pts){
+    const p = pts.slice().sort((a, b) => a[0] - b[0] || a[1] - b[1]);
+    const cross = (o, a, b) => (a[0] - o[0])*(b[1] - o[1]) - (a[1] - o[1])*(b[0] - o[0]);
+    const lo = [], up = [];
+    p.forEach(q => { while (lo.length >= 2 && cross(lo[lo.length - 2], lo[lo.length - 1], q) <= 0) lo.pop(); lo.push(q); });
+    p.slice().reverse().forEach(q => { while (up.length >= 2 && cross(up[up.length - 2], up[up.length - 1], q) <= 0) up.pop(); up.push(q); });
+    return lo.slice(0, -1).concat(up.slice(0, -1));
+  }
+  // Battery laser projector on a tripod, its beam, and the projected image
+  function laser(x, y, r, title, id){
+    const lens = [x + (r[0] + r[2]/2 > x ? 11 : -11), y - 32];
+    const corners = [[r[0], r[1]], [r[0] + r[2], r[1]], [r[0] + r[2], r[1] + r[3]], [r[0], r[1] + r[3]]];
+    const beam = hull([lens, ...corners]).map(p => p.join(',')).join(' ');
+    const fs = Math.max(8, Math.min(14, r[2]/9));
+    return `<g>
+      <defs><linearGradient id="pj-${id}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#16302b"/><stop offset="1" stop-color="#0d1c26"/></linearGradient></defs>
+      <polygon points="${beam}" fill="#fff3c4" opacity=".22"/>
+      <rect x="${r[0]}" y="${r[1]}" width="${r[2]}" height="${r[3]}" fill="url(#pj-${id})" stroke="#fff3c4" stroke-opacity=".7" stroke-width="1.5"/>
+      <text x="${r[0] + 6}" y="${r[1] + fs + 4}" font-size="${fs}" font-weight="700" font-family="Big Shoulders Stencil Display, Impact, sans-serif" fill="#f0b429">${title}</text>
+      <circle cx="${r[0] + r[2]*0.3}" cy="${r[1] + r[3]*0.65}" r="${r[3]*0.14}" fill="none" stroke="#4fb3d9" stroke-width="2"/>
+      <path d="M${r[0] + r[2]*0.45} ${r[1] + r[3]*0.75} q${r[2]*0.1} ${-r[3]*0.3} ${r[2]*0.2} 0 t${r[2]*0.2} 0" fill="none" stroke="#eef3ef" stroke-width="1.5"/>
+      <line x1="${x}" y1="${y - 26}" x2="${x - 11}" y2="${y}" stroke="#2f3533" stroke-width="2"/><line x1="${x}" y1="${y - 26}" x2="${x + 11}" y2="${y}" stroke="#2f3533" stroke-width="2"/><line x1="${x}" y1="${y - 26}" x2="${x}" y2="${y + 2}" stroke="#2f3533" stroke-width="2"/>
+      <rect x="${x - 12}" y="${y - 38}" width="24" height="12" rx="2" fill="#1d2120"/><circle cx="${lens[0]}" cy="${lens[1]}" r="3" fill="#fff3c4"/></g>`;
+  }
+  function mats(cx, cy, rx, ry, n, shape){
+    const cols = ['#d99a00', '#3c7a6b', '#5d6b73', '#c0573b']; let g = '';
+    for (let i = 0; i < n; i++) {
+      const a = Math.PI*(0.1 + 0.8*i/(n - 1)), x = cx + Math.cos(a)*rx, y = cy + Math.sin(a)*ry;
+      g += shape === 'hay' ? `<g><rect x="${x - 13}" y="${y - 8}" width="26" height="14" rx="4" fill="#e2c15a" stroke="#c9a33f"/><line x1="${x - 13}" y1="${y - 1}" x2="${x + 13}" y2="${y - 1}" stroke="#c9a33f"/></g>`
+        : `<ellipse cx="${x}" cy="${y}" rx="12" ry="5" fill="${cols[i % 4]}"/>`;
+    }
+    return g;
+  }
+  function frame(x, y, w, h, seed){
+    const r = rng(seed); let g = '';
+    for (let i = 1; i < 6; i++) g += `<line x1="${x}" y1="${y + i*h/6}" x2="${x + w}" y2="${y + i*h/6}" stroke="#cdbb94" stroke-width="1"/>`;
+    for (let i = 1; i < 5; i++) g += `<line x1="${x + i*w/5}" y1="${y}" x2="${x + i*w/5}" y2="${y + h}" stroke="#cdbb94" stroke-width="1"/>`;
+    for (let k = 0; k < 6; k++) {
+      const cx = x + 7 + r()*(w - 14), cy = y + 9 + r()*(h - 18), t = Math.floor(r()*3);
+      g += t === 0 ? `<circle cx="${cx}" cy="${cy}" r="3.5" fill="#f2c94c"/>` : t === 1 ? `<rect x="${cx - 4}" y="${cy - 5}" width="8" height="10" fill="#f7f4ea" stroke="#b9ad8f" stroke-width=".6"/>` : `<path d="M${cx} ${cy + 7} Q ${cx - 5} ${cy} ${cx} ${cy - 8} Q ${cx + 5} ${cy} ${cx} ${cy + 7}" fill="#5d8f4e"/>`;
+    }
+    return `<g><line x1="${x + 8}" y1="${y + h}" x2="${x + 8}" y2="${y + h + 12}" stroke="#6b4a2f" stroke-width="3"/><line x1="${x + w - 8}" y1="${y + h}" x2="${x + w - 8}" y2="${y + h + 12}" stroke="#6b4a2f" stroke-width="3"/>${g}<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="none" stroke="#7a5534" stroke-width="4"/></g>`;
+  }
+  const power = (x, y) => `<g><rect x="${x}" y="${y - 18}" width="24" height="17" rx="3" fill="#2f3533"/><rect x="${x + 5}" y="${y - 13}" width="7" height="4" fill="#39d98a"/><polygon points="${x + 30},${y} ${x + 74},${y} ${x + 66},${y - 22} ${x + 24},${y - 22}" fill="#2f5d8a" stroke="#c9d6e2" stroke-width="1"/><line x1="${x + 38}" y1="${y - 22}" x2="${x + 44}" y2="${y}" stroke="#c9d6e2" stroke-width=".8"/><line x1="${x + 52}" y1="${y - 22}" x2="${x + 59}" y2="${y}" stroke="#c9d6e2" stroke-width=".8"/></g>`;
+  const starlink = (x, y, pole) => `<g><line x1="${x}" y1="${y}" x2="${x}" y2="${y - pole}" stroke="#3a4144" stroke-width="2.5"/><rect x="${x - 15}" y="${y - pole - 12}" width="30" height="18" rx="2" fill="#f1f2f0" stroke="#9aa3a6" transform="rotate(-18 ${x} ${y - pole - 3})"/></g>`;
+  function cube(x, y, s, seed){
+    const r = rng(seed), d = s*0.35; let g = '';
+    const sq = (ox, oy) => `<rect x="${ox}" y="${oy}" width="${s}" height="${s}" fill="none" stroke="#9b7b56" stroke-width="3"/>`;
+    for (let i = 1; i < 6; i++) g += `<line x1="${x}" y1="${y + i*s/6}" x2="${x + s}" y2="${y + i*s/6}" stroke="#d8ccb0" stroke-width=".8"/><line x1="${x + i*s/6}" y1="${y}" x2="${x + i*s/6}" y2="${y + s}" stroke="#d8ccb0" stroke-width=".8"/>`;
+    const cards = ['#f7f4ea', '#f2d24b', '#c9a874', '#9cc38a', '#f4b6a6', '#bcd4e6'];
+    for (let k = 0; k < 9; k++) g += `<rect x="${x + 4 + r()*(s - 14)}" y="${y + 4 + r()*(s - 16)}" width="8" height="10" fill="${cards[k % 6]}"/>`;
+    return `<g>${shadowE(x + s/2 + d/2, y + s + 2, s/2 + d/2, 5)}${sq(x + d, y - d)}<line x1="${x}" y1="${y}" x2="${x + d}" y2="${y - d}" stroke="#9b7b56" stroke-width="3"/><line x1="${x + s}" y1="${y}" x2="${x + s + d}" y2="${y - d}" stroke="#9b7b56" stroke-width="3"/><line x1="${x + s}" y1="${y + s}" x2="${x + s + d}" y2="${y + s - d}" stroke="#9b7b56" stroke-width="3"/>${g}${sq(x, y)}</g>`;
+  }
+
+  const SCENES = {
+    farm: () => {
+      let rows = ''; for (let k = -7; k <= 7; k++) rows += `<line x1="${500 + k*6}" y1="212" x2="${500 + k*46}" y2="360" stroke="#87ad57" stroke-width="4"/>`;
+      return sky('sk-farm', '#bfe0f2', '#eef6ec') + `<path d="M0 190 Q140 150 280 182 T640 170 V360 H0Z" fill="#9cc38a"/>` + ground(210, '#bcd585') + rows
+        + `<rect x="40" y="160" width="180" height="140" fill="#b24a33"/><polygon points="30,162 130,100 230,162" fill="#7d3220"/><rect x="112" y="118" width="36" height="28" fill="#5a2418"/>`
+        + `<polygon points="220,187 460,212 460,300 220,300" fill="#000" opacity=".08"/>`
+        + ftable(232, 270) + ftable(340, 276) + `<line x1="335" y1="196" x2="335" y2="300" stroke="#4a3624" stroke-width="4"/><line x1="455" y1="208" x2="455" y2="302" stroke="#4a3624" stroke-width="4"/>`
+        + `<polygon points="220,175 462,200 462,212 220,187" fill="#6b2a1c"/>`
+        + `<rect x="72" y="198" width="116" height="70" fill="#f3efe6"/>` + laser(262, 338, [76, 202, 108, 62], 'SOIL LAYERS', 'farm')
+        + mats(130, 306, 72, 26, 8) + starlink(440, 204, 14)
+        + `<line x1="470" y1="222" x2="640" y2="222" stroke="#8a6a48" stroke-width="3"/>` + frame(560, 232, 58, 66, 3) + power(470, 342)
+        + label(234, 166, "Barn's covered area · day base") + label(66, 190, 'Sheet on the barn wall') + label(226, 356, 'Laser projector') + label(60, 352, 'Sit mats') + label(420, 186, 'Starlink Mini') + label(556, 226, 'String grid') + label(500, 318, 'Power + solar');
+    },
+    waterfall: () => sky('sk-wf', '#cfe6ee', '#f2f7f2') + [30, 80, 540, 590].map(x => tree(x, 168, 1.1, '#2f6b45')).join('')
+      + `<path d="M140 50 L300 36 L330 36 L500 46 L520 250 L120 256 Z" fill="#7d776c"/><path d="M180 90 L250 80 L230 140 Z" fill="#6a655c"/>`
+      + `<rect x="290" y="38" width="44" height="214" fill="#e6f3f7"/>` + [296, 306, 316, 326].map(x => `<line x1="${x}" y1="40" x2="${x}" y2="250" stroke="#b7dbe8" stroke-width="2"/>`).join('')
+      + ground(250, '#7fae6a') + `<ellipse cx="312" cy="262" rx="190" ry="28" fill="#5aa3c4"/><ellipse cx="312" cy="256" rx="70" ry="10" fill="#e6f3f7" opacity=".7"/>`
+      + tarpFly(24, 206, 246, 330, '#3c7a6b', ftable(40, 300) + ftable(122, 304))
+      + laser(330, 344, [356, 84, 116, 66], 'WATER CYCLE', 'wf') + mats(430, 298, 80, 26, 8)
+      + frame(556, 248, 58, 64, 7) + power(220, 352)
+      + label(30, 238, 'Tarp fly + tables · day base') + label(376, 74, 'Projected on the rock face') + label(300, 356, 'Laser projector') + label(470, 344, 'Sit mats') + label(548, 242, 'String grid'),
+    river: () => sky('sk-rv', '#c6e3f0', '#f0f6ee') + `<path d="M0 170 Q160 130 320 160 T640 150 V360 H0Z" fill="#94bf83"/>` + [60, 130, 420, 500, 590].map(x => tree(x, 176, 0.95, '#3f7a4a')).join('')
+      + ground(190, '#9cc47e') + `<path d="M0 200 C160 182 260 238 360 228 S560 190 640 204 L640 254 C540 240 450 286 340 280 S140 236 0 252 Z" fill="#4f95b8"/>`
+      + [[80, 220], [200, 236], [470, 236], [560, 222]].map(([x, y]) => `<path d="M${x} ${y} q10 -4 20 0 t20 0" fill="none" stroke="#dbeef6" stroke-width="2"/>`).join('')
+      + tarpFly(24, 214, 268, 336, '#d9663a', ftable(40, 306) + ftable(128, 310))
+      + `<line x1="482" y1="292" x2="466" y2="326" stroke="#2f3533" stroke-width="2"/><line x1="482" y1="292" x2="498" y2="326" stroke="#2f3533" stroke-width="2"/><rect x="430" y="234" width="104" height="60" fill="#f3efe6" stroke="#9aa3a6"/>`
+      + laser(370, 348, [434, 238, 96, 52], 'FLOW SPEED', 'rv') + mats(482, 328, 74, 14, 7)
+      + `<ellipse cx="300" cy="320" rx="20" ry="7" fill="#3c7a6b"/><ellipse cx="300" cy="318" rx="14" ry="4" fill="#4f95b8"/>` + frame(270, 254, 48, 52, 13)
+      + power(564, 300)
+      + label(30, 258, 'Tarp fly + tables · day base') + label(430, 226, 'Tripod screen') + label(316, 356, 'Laser projector') + label(236, 248, 'Test station') + label(560, 266, 'Power + solar'),
+    ranch: () => sky('sk-rn', '#cfe4ef', '#f6f2e6') + `<path d="M0 170 Q200 120 380 160 T640 150 V360 H0Z" fill="#b5c27c"/>` + ground(196, '#d2c487')
+      + `<rect x="20" y="140" width="280" height="160" fill="#8a6a48"/><polygon points="10,142 160,94 310,142" fill="#5a4330"/>`
+      + `<polygon points="20,206 300,206 330,226 0,226" fill="#5a4330"/><polygon points="20,226 300,226 300,300 20,300" fill="#000" opacity=".1"/>`
+      + `<rect x="200" y="230" width="92" height="62" fill="#efe9df"/>` + ftable(30, 272) + ftable(104, 276)
+      + [24, 150, 296].map(x => `<line x1="${x}" y1="226" x2="${x}" y2="302" stroke="#4a3624" stroke-width="4"/>`).join('')
+      + laser(372, 340, [204, 234, 84, 54], 'CARE ROUTINES', 'rn') + mats(246, 314, 92, 22, 7, 'hay')
+      + Array.from({ length:8 }, (_, i) => `<line x1="${350 + i*38}" y1="204" x2="${350 + i*38}" y2="234" stroke="#7a5534" stroke-width="4"/>`).join('') + `<line x1="350" y1="212" x2="640" y2="212" stroke="#7a5534" stroke-width="3"/><line x1="350" y1="224" x2="640" y2="224" stroke="#7a5534" stroke-width="3"/>`
+      + starlink(270, 124, 12) + frame(548, 240, 58, 62, 17) + power(470, 352)
+      + label(26, 200, 'Stable porch · day base') + label(204, 222, 'Projected on the stable door') + label(330, 356, 'Laser projector') + label(150, 352, 'Hay-bale campfire') + label(540, 234, 'String grid') + label(230, 104, 'Starlink Mini'),
+    mountain: () => sky('sk-mt', '#a9cfe6', '#eef4f2') + `<polygon points="0,236 110,100 200,176 330,44 470,186 560,110 640,196 640,360 0,360" fill="#7d958c"/><polygon points="0,262 140,180 260,232 380,160 520,236 640,206 640,360 0,360" fill="#5f8058"/>`
+      + `<path d="M330 360 L360 320 L330 296 L382 262 L350 236 L390 206" fill="none" stroke="#e8dcc0" stroke-width="3" stroke-dasharray="6 5"/>` + ground(290, '#8aa66a')
+      + `<polygon points="40,226 220,226 220,304 40,304" fill="#7a5534"/><polygon points="40,226 30,304 40,304" fill="#5a4330"/><polygon points="220,226 232,304 220,304" fill="#5a4330"/>`
+      + `<polygon points="20,206 240,200 252,222 8,228" fill="#5a4330"/><rect x="70" y="236" width="120" height="54" fill="#efe9df"/>`
+      + laser(232, 344, [74, 240, 112, 46], 'ALTITUDE', 'mt') + mats(126, 314, 82, 16, 7)
+      + `<ellipse cx="520" cy="320" rx="26" ry="9" fill="#8f8a80"/>` + frame(460, 250, 52, 58, 23)
+      + label(30, 196, 'Trail shelter · day base') + label(76, 232, 'Sheet on the back wall') + label(244, 356, 'Pocket laser projector') + label(40, 352, 'Sit mats') + label(452, 244, 'String grid'),
+    mangrove: () => sky('sk-mg', '#bfe3f0', '#f3f6ee') + `<rect y="160" width="640" height="100" fill="#4fa6b8"/><path d="M0 250 Q160 238 320 252 T640 246 V360 H0Z" fill="#e7d6a8"/>`
+      + [[46, 150], [110, 142]].map(([x, y]) => `<g><circle cx="${x}" cy="${y}" r="28" fill="#2f6b45"/><circle cx="${x - 22}" cy="${y + 8}" r="18" fill="#2f6b45"/><circle cx="${x + 22}" cy="${y + 8}" r="18" fill="#2f6b45"/>${[-20, -8, 4, 16].map(d => `<path d="M${x} ${y + 20} Q ${x + d} ${y + 46} ${x + d*1.8} ${y + 86}" fill="none" stroke="#6b4a2f" stroke-width="3"/>`).join('')}</g>`).join('')
+      + [[420, 196], [520, 184]].map(([x, y]) => `<path d="M${x} ${y} q10 -4 20 0 t20 0" fill="none" stroke="#dbeef6" stroke-width="2"/>`).join('')
+      + `<polygon points="200,290 400,290 400,304 200,304" fill="#000" opacity=".1"/>` + [222, 380].map(x => `<line x1="${x}" y1="200" x2="${x}" y2="288" stroke="#6b4a2f" stroke-width="4"/>`).join('')
+      + ftable(236, 276, 58) + ftable(312, 280, 58) + [196, 404].map(x => `<line x1="${x}" y1="208" x2="${x}" y2="304" stroke="#6b4a2f" stroke-width="5"/>`).join('')
+      + `<polygon points="168,214 300,120 432,214" fill="#c9a35c"/>` + Array.from({ length:22 }, (_, i) => { const x = 176 + i*12; return `<line x1="${x}" y1="214" x2="${300 + (x - 300)*0.55}" y2="${168 - Math.abs(x - 300)*0.0}" stroke="#a8823f" stroke-width="1.2"/>`; }).join('')
+      + `<rect x="168" y="210" width="264" height="10" fill="#b08d5c"/>`
+      + `<line x1="476" y1="206" x2="476" y2="304" stroke="#3a4144" stroke-width="3"/><line x1="600" y1="206" x2="600" y2="304" stroke="#3a4144" stroke-width="3"/><rect x="478" y="210" width="120" height="62" fill="#f3efe6"/>`
+      + laser(440, 346, [482, 214, 112, 54], 'ROOTS', 'mg') + mats(538, 324, 76, 16, 7)
+      + starlink(404, 214, 6) + power(40, 344) + frame(104, 262, 54, 52, 29)
+      + label(176, 116, 'Thatched palapa · day base') + label(474, 198, 'Sail screen') + label(386, 356, 'Laser projector') + label(560, 352, 'Sit mats') + label(90, 256, 'Nature loom'),
+    museum: () => `<rect width="640" height="360" fill="#e3ddd2"/><polygon points="0,0 80,60 80,250 0,330" fill="#e6dfd3"/><polygon points="640,0 560,60 560,250 640,330" fill="#ddd5c7"/><rect x="80" y="60" width="480" height="190" fill="#efe9df"/>`
+      + `<polygon points="80,250 560,250 640,330 640,360 0,360 0,330" fill="#c9b79c"/>` + Array.from({ length:9 }, (_, i) => `<line x1="${80 + i*60}" y1="250" x2="${-80 + i*100}" y2="360" stroke="#b4a184" stroke-width="1"/>`).join('')
+      + [[100, 108, 60, 46], [180, 98, 46, 64]].map(([x, y, w, h]) => `<g><rect x="${x}" y="${y}" width="${w}" height="${h}" fill="#b9902f"/><rect x="${x + 5}" y="${y + 5}" width="${w - 10}" height="${h - 10}" fill="#6f8f86"/></g>`).join('')
+      + `<polygon points="585,90 620,70 620,160 585,170" fill="#b9902f"/><polygon points="590,96 615,82 615,152 590,160" fill="#a87a5a"/>`
+      + `<rect x="476" y="196" width="34" height="56" fill="#fbfaf6" stroke="#cfc7b8"/><circle cx="493" cy="182" r="14" fill="#7d776c"/>`
+      + laser(330, 330, [258, 92, 166, 92], 'OUR COLLECTION', 'ms') + mats(338, 292, 112, 24, 9)
+      + frame(18, 236, 50, 62, 31) + frame(84, 250, 50, 60, 37) + ftable(470, 300, 64) + ftable(552, 312, 64)
+      + label(258, 84, 'Gallery wall · laser projection') + label(14, 226, 'Student string grids') + label(470, 290, 'Folding tables') + label(290, 352, 'Laser projector') + label(186, 340, 'Sit mats') + label(96, 92, 'Collection'),
+    plaza: () => sky('sk-pl', '#bfe0f2', '#f6efe2') + ground(210, '#d8cbb0') + Array.from({ length:11 }, (_, i) => `<line x1="${320 + (i - 5)*30}" y1="210" x2="${320 + (i - 5)*120}" y2="360" stroke="#c4b596" stroke-width="1"/>`).join('')
+      + `<rect x="250" y="80" width="140" height="132" fill="#e9d8b8"/><rect x="230" y="50" width="40" height="162" fill="#e2cfa8"/><rect x="370" y="50" width="40" height="162" fill="#e2cfa8"/><circle cx="250" cy="48" r="16" fill="#c9a35c"/><circle cx="390" cy="48" r="16" fill="#c9a35c"/><path d="M300 212 V160 a20 20 0 0 1 40 0 V212Z" fill="#6b4a2f"/>`
+      + `<rect x="0" y="122" width="200" height="90" fill="#e8c66e"/>` + [20, 70, 120, 170].map(x => `<rect x="${x}" y="134" width="16" height="22" fill="#9b7b56"/>`).join('')
+      + `<rect x="440" y="110" width="200" height="102" fill="#d98f5f"/>` + [452, 492, 532, 572, 612].map(x => `<path d="M${x} 212 V178 a14 14 0 0 1 28 0 V212Z" fill="#7a4a30"/>`).join('')
+      + tree(590, 222, 1.0, '#3f7a4a')
+      + `<polygon points="196,292 356,292 346,278 206,278" fill="#cfc4ad"/>` + [212, 252, 300, 340].map(x => `<line x1="${x}" y1="226" x2="${x}" y2="280" stroke="#4f7f6a" stroke-width="3"/>`).join('') + `<polygon points="186,228 276,186 366,228" fill="#4f7f6a"/><rect x="186" y="226" width="180" height="6" fill="#3e6656"/>`
+      + cube(392, 250, 50, 41) + cube(478, 262, 46, 43)
+      + ftable(456, 222, 54) + ftable(530, 224, 54)
+      + laser(176, 346, [10, 164, 116, 42], 'OUR PUEBLO', 'pl') + mats(70, 300, 62, 18, 7)
+      + starlink(620, 110, 10) + power(560, 350)
+      + label(214, 178, 'Kiosco · shade and gathering') + label(452, 104, 'Portales · day base') + label(392, 330, 'Pop-up museum cubes') + label(6, 154, 'Projected on a plain wall') + label(150, 358, 'Laser projector') + label(20, 336, 'Sit mats')
+  };
+  const SITES = [
+    { key:'farm', name:'Nearby farm', prov:'Where does our lunch begin?',
+      base:"The barn's covered area: shade, tables and benches, water and a toilet at the farmhouse",
+      proj:'Laser projector onto a sheet hung on the barn wall',
+      formation:'Water holes at the tables and along the crop rows; a campfire facing the barn wall',
+      kit:'String-grid frames, soil kit, data loggers, iPads, power station', net:'Starlink Mini on the lean-to roof', theme:'Sharing the planet', watch:'Machinery, animals, sun' },
+    { key:'waterfall', name:'Waterfall', prov:'Where does the water come from, and where does it go?',
+      base:'A tarp fly with folding tables on flat ground, set well back from the pool',
+      proj:'Laser projector onto the rock face beside the falls (best in shade or late in the day)',
+      formation:'A campfire facing the rock face; caves along the rocks for sketching',
+      kit:'Sit mats, sketchpads, hand lenses, audio recorders for the soundscape, iPads for slow-motion video', net:'Offline; everything syncs back at the container', theme:'How the world works', watch:'Wet rock, water depth, sudden rises after rain' },
+    { key:'river', name:'River', prov:'Is the river faster at the bend?',
+      base:'A tarp fly and folding tables on the near bank, with tubs for test stations',
+      proj:'Laser projector onto a tripod screen on the bank',
+      formation:'Water holes as test stations along the bank; a campfire at the screen to compare results',
+      kit:'Water testing kit, data loggers, leaf floats and timers, iPads, string grid', net:'Offline; sync on return', theme:'How the world works', watch:'Adult ratios at the water, footing on the bank' },
+    { key:'ranch', name:'Horse ranch', prov:'What does it take to care for an animal?',
+      base:"The stable's covered porch: tables in the shade, water on site",
+      proj:'Laser projector onto the stable door',
+      formation:'A campfire on hay bales facing the stable; caves for interviews with ranch staff',
+      kit:'Wireless mics for interviews, iPads, sketchpads, string-grid frame for the class display', net:'Starlink Mini on the stable roof', theme:'Who we are · How we organize ourselves', watch:'Distance from hooves, animal behaviour, allergies' },
+    { key:'mountain', name:'Nearby mountain', prov:'What changes as we climb?',
+      base:'An existing trail shelter, or a lightweight tarp where there is none',
+      proj:"Pocket laser projector onto a sheet on the shelter's back wall",
+      formation:'Caves at each stop for solo journaling; a campfire in the shelter at the top',
+      kit:'Light kit only: sit mats, clipboards, data loggers for temperature and humidity, GPS, headlamps, radios', net:'Radios and a satellite messenger', theme:'Where we are in place and time', watch:'Weather, water, group spacing on the trail' },
+    { key:'mangrove', name:'Mangrove beach', prov:'How do the roots hold the coast?',
+      base:'A thatched palapa on the beach: tables in its shade',
+      proj:'Laser projector onto a sail screen strung between two poles on the sand',
+      formation:'A campfire on the sand at the sail screen; water holes at low tide',
+      kit:"String-grid nature looms (photograph finds, don't collect them), water test kit, tide table, iPads, power station", net:'Starlink Mini on a palapa post', theme:'Sharing the planet', watch:'Tides, sun, protected habitat' },
+    { key:'museum', name:'Museum', prov:'What makes something worth keeping?',
+      base:"The museum's education room or a quiet gallery: folding tables, the museum's power and Wi-Fi",
+      proj:"Laser projector onto a blank gallery wall, with the museum's permission",
+      formation:'A campfire facing the projection; caves in front of chosen works',
+      kit:'Sketchpads, string-grid frames for a student pop-up beside the collection, iPads, wireless mics for curator interviews', net:'Museum Wi-Fi', theme:'How we express ourselves · Where we are in place and time', watch:'Rules on photography and touching; group size in the galleries' },
+    { key:'plaza', name:'Pueblo central plaza', prov:'Who makes the pueblo what it is?',
+      base:'Tables under the portales (the arcade); the kiosco for shade and gathering',
+      proj:"Laser projector onto a plain building wall at dusk, with the municipality's permission",
+      formation:'A campfire facing the wall projection; caves for interviews with vendors and elders; the two pop-up museum cubes as a community exhibition',
+      kit:'Pop-up museum cubes, wireless mics, iPads, sit mats, power station', net:'Starlink Mini or plaza Wi-Fi', theme:'Who we are · How we organize ourselves', watch:'Traffic and crowds; permission for filming and projection' }
+  ];
+  const scene = s => `<svg viewBox="0 0 640 360" role="img" aria-label="Mockup of a day base at the ${esc(s.name.toLowerCase())}">${SCENES[s.key]()}</svg>`;
+  document.getElementById('sites').innerHTML = SITES.map(s => `<article class="site">${scene(s)}<div class="body"><h2>${esc(s.name)}</h2><p class="prov">${esc(s.prov)}</p><dl>
+    <dt>Day base</dt><dd>${esc(s.base)}</dd><dt>Projection</dt><dd>${esc(s.proj)}</dd><dt>Formation</dt><dd>${esc(s.formation)}</dd><dt>Kit</dt><dd>${esc(s.kit)}</dd><dt>Connection</dt><dd>${esc(s.net)}</dd><dt>IB theme</dt><dd>${esc(s.theme)}</dd><dt>Watch for</dt><dd>${esc(s.watch)}</dd></dl></div></article>`).join('');
+
+  route();
+})();
+</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script>
+(function(){
+  const stage = document.getElementById('stage');
+  if (!window.THREE || !THREE.OrbitControls) { document.getElementById('stage-msg').hidden = false; return; }
+
+  /* ---------- Site geometry (1 unit = 1 ft) ---------- */
+  const L = 40, W = 8, H = 8.5, T = 0.16;
+  const X0 = -L/2, X1 = L/2, Z0 = -W/2, Z1 = W/2;
+  const ZB = Z0 + T, ZF = Z1 - T;               // inner faces: board wall (back), door wall (front)
+  const SLAB_Y = -0.47;                         // covered-area slab, 6″ below the container floor
+  const SPEC = {
+    sideDoor: { x0:-18.5, x1:-15.5, y1:6.8 },
+    sliding:  { x0:-4,    x1:4,     y1:7.2 },
+    winL:     { x0:-18,   x1:-6,    y0:3, y1:7 },
+    winR:     { x0:13,    x1:19,    y0:3, y1:7 },
+    board:    { x0:-4,    x1:4,     y0:3, y1:7 },
+    proj:     { x0:4.6,   x1:12.6,  y0:2.75, y1:7.25 },
+    shelfY: 7.3, desk: 3,
+    chalk:    { x0:-14.6, x1:-4.9,  y0:2.4, y1:6.4 },
+    lockers:  { x0:4.8, n:7, w:2, h:6.5, d:1.8 },
+    cover:    { x0:-20, x1:20, z0:Z1, z1:Z1 + 40, h:14 },
+    ceilY: 8.1
+  };
+  const projCx = (SPEC.proj.x0 + SPEC.proj.x1)/2;
+
+  /* ---------- Renderer, scene, camera ---------- */
+  const renderer = new THREE.WebGLRenderer({ antialias:true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  const canvas = renderer.domElement;
+  canvas.setAttribute('tabindex', '0');
+  canvas.setAttribute('aria-label', '3D model of the container classroom and covered area. Drag to rotate.');
+  stage.insertBefore(canvas, stage.firstChild);
+
+  const scene = new THREE.Scene();
+  const siteGroup = new THREE.Group(); siteGroup.visible = false; scene.add(siteGroup);
+  const siteShown = () => siteGroup.visible;
+  function shown(o){ while (o) { if (!o.visible) return false; o = o.parent; } return true; }
+  const camera = new THREE.PerspectiveCamera(48, 1, 0.1, 900);
+  camera.position.set(-22, 21, -30);
+
+  scene.add(new THREE.HemisphereLight(0xffffff, 0x7f8678, 0.55));
+  const sun = new THREE.DirectionalLight(0xfff6ea, 0.7);
+  sun.target.position.set(0, 0, 28); scene.add(sun.target);
+  sun.position.set(-20, 40, 56);
+  sun.castShadow = true;
+  sun.shadow.mapSize.set(4096, 4096);
+  Object.assign(sun.shadow.camera, { left:-62, right:62, top:62, bottom:-62, near:1, far:160 });
+  sun.shadow.bias = -0.0006;
+  scene.add(sun);
+  [-12, 0, 12].forEach(x => { const p = new THREE.PointLight(0xfff4e6, 0.22, 26); p.position.set(x, 7.6, 0); scene.add(p); });
+
+  /* ---------- Canvas textures ---------- */
+  function seeded(seed){ let s = seed; return () => (s = (s * 16807) % 2147483647) / 2147483647; }
+  function canvasTex(w, h, draw){
+    const c = document.createElement('canvas'); c.width = w; c.height = h;
+    const tex = new THREE.CanvasTexture(c);
+    tex.userData = { redraw(){ draw(c.getContext('2d'), w, h); tex.needsUpdate = true; } };
+    tex.userData.redraw(); tex.anisotropy = 4;
+    return tex;
+  }
+  function shade(hex, l){ const c = new THREE.Color(hex); c.offsetHSL(0, 0, l); return '#' + c.getHexString(); }
+  const HAND = "Caveat, 'Comic Sans MS', cursive";
+
+  const corrugated = canvasTex(128, 8, (g, w, h) => {
+    const base = '#a5432b', grd = g.createLinearGradient(0, 0, w, 0);
+    grd.addColorStop(0, shade(base, -0.10)); grd.addColorStop(0.22, base); grd.addColorStop(0.42, shade(base, 0.08));
+    grd.addColorStop(0.6, base); grd.addColorStop(0.82, shade(base, -0.12)); grd.addColorStop(1, shade(base, -0.10));
+    g.fillStyle = grd; g.fillRect(0, 0, w, h);
+  });
+  corrugated.wrapS = corrugated.wrapT = THREE.RepeatWrapping;
+
+  const plywood = canvasTex(512, 512, (g, w, h) => {
+    const r = seeded(7);
+    g.fillStyle = '#c8a874'; g.fillRect(0, 0, w, h);
+    for (let i = 0; i < 260; i++) {
+      g.strokeStyle = `rgba(120,84,40,${0.05 + r()*0.08})`; g.lineWidth = 1 + r()*1.5;
+      const y = r()*h; g.beginPath(); g.moveTo(0, y);
+      for (let x = 0; x <= w; x += 32) g.lineTo(x, y + Math.sin(x/60 + i)*3*r());
+      g.stroke();
+    }
+    g.fillStyle = 'rgba(70,48,20,.35)';
+    for (let y = 0; y < h; y += 128) g.fillRect(0, y, w, 2);
+  });
+  plywood.wrapS = plywood.wrapT = THREE.RepeatWrapping;
+  plywood.repeat.set(L/4, W/4);
+
+  const boardTex = canvasTex(1024, 512, (g, w, h) => {
+    g.fillStyle = '#fbfbf7'; g.fillRect(0, 0, w, h);
+    g.fillStyle = '#1f4e8c'; g.font = `600 70px ${HAND}`;
+    g.fillText('Where there is no ________,', 60, 120);
+    g.fillText('what does learning need?', 60, 205);
+    g.font = `600 46px ${HAND}`; g.fillStyle = '#2f6b45';
+    g.fillText('light  ·  air  ·  a surface to think on  ·  each other', 60, 300);
+    g.strokeStyle = '#b8402a'; g.lineWidth = 6; g.lineCap = 'round';
+    g.beginPath(); g.arc(860, 400, 46, 0, Math.PI*2); g.stroke();
+    for (let a = 0; a < 8; a++) { const t = a*Math.PI/4; g.beginPath(); g.moveTo(860+Math.cos(t)*62, 400+Math.sin(t)*62); g.lineTo(860+Math.cos(t)*84, 400+Math.sin(t)*84); g.stroke(); }
+  });
+
+  const chalkTex = canvasTex(1024, 420, (g, w, h) => {
+    g.fillStyle = '#26352d'; g.fillRect(0, 0, w, h);
+    const r = seeded(3);
+    for (let i = 0; i < 40; i++) { g.fillStyle = `rgba(255,255,255,${0.02 + r()*0.03})`; g.beginPath(); g.ellipse(r()*w, r()*h, 40 + r()*90, 14 + r()*30, r()*3, 0, Math.PI*2); g.fill(); }
+    g.fillStyle = 'rgba(245,245,235,.92)'; g.font = `600 48px ${HAND}`;
+    g.fillText("Today's provocation:", 50, 80);
+    g.font = `600 64px ${HAND}`; g.fillText('What lives under the bridge?', 50, 165);
+    g.strokeStyle = 'rgba(245,245,235,.85)'; g.lineWidth = 5; g.lineCap = 'round';
+    g.beginPath(); g.moveTo(560, 330); g.quadraticCurveTo(720, 200, 880, 330); g.stroke();
+    for (let k = 0; k < 3; k++) { g.beginPath(); g.moveTo(520, 360 + k*18); g.bezierCurveTo(600, 345 + k*18, 680, 375 + k*18, 920, 355 + k*18); g.stroke(); }
+    g.font = `600 36px ${HAND}`; g.fillText('notice · wonder · sketch', 50, 300);
+  });
+
+  let projMode = 'clear';
+  function wrapText(g, text, x, y, maxW, lh){
+    const words = text.split(' '); let line = '';
+    words.forEach((wd, k) => {
+      const test = line ? line + ' ' + wd : wd;
+      if (g.measureText(test).width > maxW && line) { g.fillText(line, x, y); line = wd; y += lh; } else line = test;
+      if (k === words.length - 1) g.fillText(line, x, y);
+    });
+    return y + lh;
+  }
+  function recDot(g, x, y){ g.fillStyle = '#e5484d'; g.beginPath(); g.arc(x, y, 9, 0, Math.PI*2); g.fill(); }
+  const projTex = canvasTex(1024, 576, (g, w, h) => {
+    if (projMode === 'clear') {
+      const grd = g.createLinearGradient(0, 0, w, h); grd.addColorStop(0, '#16302b'); grd.addColorStop(1, '#0d1c26');
+      g.fillStyle = grd; g.fillRect(0, 0, w, h);
+      g.fillStyle = '#f0b429'; g.font = "800 92px 'Big Shoulders Stencil Display', Impact, sans-serif";
+      g.fillText('NOTHING ON THE TABLE', 64, 200);
+      g.fillStyle = '#eef3ef'; g.font = "800 60px 'Big Shoulders Stencil Display', Impact, sans-serif";
+      g.fillText('UNLESS IT SERVES THE LESSON', 64, 280);
+      g.fillStyle = 'rgba(238,243,239,.55)'; g.font = "400 24px 'IBM Plex Mono', monospace";
+      g.fillText('MVC · prototype 01', 66, 520);
+    } else if (projMode === 'respond') {
+      g.fillStyle = '#f4f6f3'; g.fillRect(0, 0, w, h);
+      g.fillStyle = '#16201c'; g.font = "600 40px 'IBM Plex Sans', sans-serif";
+      g.fillText('Which layer of the river bank holds the most water?', 56, 84);
+      [['#8a6a48', 'A'], ['#b08d5c', 'B'], ['#6f7f86', 'C']].forEach(([c, t], i) => {
+        g.fillStyle = c; g.fillRect(120, 140 + i*110, 560, 104);
+        g.fillStyle = '#fff'; g.font = "800 64px 'Big Shoulders Stencil Display', Impact, sans-serif"; g.fillText(t, 140, 215 + i*110);
+      });
+      g.globalAlpha = .35; g.fillStyle = '#2f6fa8'; g.fillRect(680, 140, 220, 330); g.globalAlpha = 1;
+      g.fillStyle = '#16201c'; g.font = "500 28px 'IBM Plex Sans', sans-serif";
+      g.fillText('Answer on your whiteboard. Hold it up on 3.', 56, 530);
+    } else if (projMode === 'sketch') {
+      g.fillStyle = '#2b2f2d'; g.fillRect(0, 0, w, h);
+      g.save(); g.translate(330, 300); g.rotate(-0.04);
+      g.fillStyle = '#f7f4ea'; g.fillRect(-250, -230, 500, 460);
+      g.strokeStyle = '#555'; g.lineWidth = 3; g.lineCap = 'round';
+      g.beginPath(); g.ellipse(0, 0, 90, 170, 0.5, 0, Math.PI*2); g.stroke();
+      g.beginPath(); g.moveTo(-95, 150); g.lineTo(95, -150); g.stroke();
+      for (let k = -3; k <= 3; k++) { g.beginPath(); g.moveTo(k*28, -k*44); g.lineTo(k*28 + 70, -k*44 + 20); g.moveTo(k*28, -k*44); g.lineTo(k*28 - 60, -k*44 - 30); g.stroke(); }
+      g.restore();
+      g.fillStyle = '#f2d24b'; g.fillRect(640, 120, 220, 170); g.fillRect(680, 330, 220, 170);
+      g.fillStyle = '#3a3a2a'; g.font = `600 34px ${HAND}`; g.fillText('veins = rivers?', 660, 200); g.fillText('they branch', 700, 410); g.fillText('the same way', 700, 450);
+      g.strokeStyle = '#ff5a3c'; g.lineWidth = 6;
+      g.beginPath(); g.ellipse(360, 260, 120, 60, -0.9, 0, Math.PI*2); g.stroke();
+      g.beginPath(); g.moveTo(480, 230); g.quadraticCurveTo(570, 190, 630, 200); g.stroke();
+      g.strokeStyle = '#4cc9f0'; g.beginPath(); g.moveTo(300, 420); g.lineTo(460, 380); g.stroke();
+      recDot(g, 40, 40); g.fillStyle = '#eef3ef'; g.font = "500 22px 'IBM Plex Mono', monospace"; g.fillText('LIVE · document camera · Table 2', 60, 48);
+    } else if (projMode === 'discuss') {
+      g.fillStyle = '#101a17'; g.fillRect(0, 0, w, h);
+      recDot(g, 48, 52); g.fillStyle = '#eef3ef'; g.font = "500 24px 'IBM Plex Mono', monospace";
+      g.fillText('TABLE 2 · RECORDING 04:12 · TRANSCRIBING', 70, 60);
+      let y = 140;
+      [['Ana', 'I think the water slows down where the river bends.'],
+       ['Leo', 'But the outside of the bend is deeper, so it must be faster there.'],
+       ['Mia', 'Could we test it with a leaf at both spots?']].forEach(([who, t], i) => {
+        g.fillStyle = '#f0b429'; g.font = "600 26px 'IBM Plex Sans', sans-serif"; g.fillText(who, 56, y);
+        g.fillStyle = i === 2 ? '#ffffff' : 'rgba(238,243,239,.82)'; g.font = "400 30px 'IBM Plex Sans', sans-serif";
+        y = wrapText(g, t, 150, y, 800, 40) + 26;
+      });
+      g.fillStyle = 'rgba(240,180,41,.9)'; g.fillRect(150, y - 52, 470, 4);
+      g.fillStyle = 'rgba(238,243,239,.55)'; g.font = "400 22px 'IBM Plex Mono', monospace";
+      g.fillText('Tagged: Thinking skills · Communication skills', 56, 540);
+    } else {
+      g.fillStyle = '#e9ece8'; g.fillRect(0, 0, w, h);
+      g.save(); g.translate(250, 300); g.rotate(-0.05);
+      g.fillStyle = '#fbfaf4'; g.fillRect(-200, -250, 400, 500);
+      g.strokeStyle = 'rgba(70,120,190,.35)'; g.lineWidth = 2;
+      for (let y = -200; y < 240; y += 36) { g.beginPath(); g.moveTo(-200, y); g.lineTo(200, y); g.stroke(); }
+      g.fillStyle = '#2b3a67'; g.font = `600 34px ${HAND}`;
+      ['The bank is wetter', 'at the bottom because', 'water sinks through', 'the sand layer', 'and stops at clay.'].forEach((t, i) => g.fillText(t, -180, -170 + i*36));
+      g.restore();
+      g.fillStyle = '#16201c'; g.font = "500 22px 'IBM Plex Mono', monospace"; g.fillText('TRANSCRIBED · 2 seconds ago', 500, 90);
+      g.font = "400 30px 'IBM Plex Sans', sans-serif";
+      wrapText(g, 'The bank is wetter at the bottom because water sinks through the sand layer and stops at clay.', 500, 150, 470, 42);
+      g.fillStyle = '#3c7a6b'; g.font = "500 22px 'IBM Plex Mono', monospace";
+      g.fillText('Tagged: Research skills', 500, 470); g.fillText('Learner profile: Inquirers', 500, 505);
+    }
+  });
+
+  const stencilTex = canvasTex(512, 256, (g, w, h) => {
+    g.clearRect(0, 0, w, h);
+    g.fillStyle = 'rgba(245,240,230,.92)';
+    g.font = "800 74px 'Big Shoulders Stencil Display', Impact, sans-serif"; g.fillText('MVCU 040008 1', 20, 100);
+    g.font = "800 58px 'Big Shoulders Stencil Display', Impact, sans-serif"; g.fillText('42G1', 20, 185);
+  });
+
+  if (document.fonts && document.fonts.load) {
+    Promise.all([
+      document.fonts.load("600 70px Caveat"),
+      document.fonts.load("800 96px 'Big Shoulders Stencil Display'"),
+      document.fonts.load("500 40px 'IBM Plex Mono'"),
+      document.fonts.load("600 40px 'IBM Plex Sans'"),
+      document.fonts.load("400 30px 'IBM Plex Sans'")
+    ]).catch(() => {}).then(() => [boardTex, projTex, stencilTex, chalkTex].forEach(t => t.userData.redraw()));
+  }
+
+  /* ---------- Helpers ---------- */
+  function box(w, h, d, mat, x, y, z, parent){
+    const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat);
+    m.position.set(x, y, z); m.castShadow = true; m.receiveShadow = true;
+    (parent || scene).add(m); return m;
+  }
+  function cyl(r, len, mat, x, y, z, parent, rx, rz){
+    const m = new THREE.Mesh(new THREE.CylinderGeometry(r, r, len, 12), mat);
+    m.position.set(x, y, z); m.rotation.x = rx || 0; m.rotation.z = rz || 0; m.castShadow = true;
+    (parent || scene).add(m); return m;
+  }
+  function fmt(ft){
+    const inches = Math.round(ft * 12), f = Math.floor(inches/12), i = inches % 12;
+    return i ? `${f}′ ${i}″` : `${f}′`;
+  }
+  const rotXZ = (x, z, a) => ({ x: x*Math.cos(a) + z*Math.sin(a), z: -x*Math.sin(a) + z*Math.cos(a) });
+  const facing = (fx, fz) => Math.atan2(-fx, -fz);   // chair yaw that makes the sitter face (fx, fz)
+  const metal = new THREE.MeshStandardMaterial({ color:0x50595c, roughness:0.4, metalness:0.6 });
+
+  /* ---------- Ground, covered area, container base ---------- */
+  const groundMat = new THREE.MeshStandardMaterial({ color:0xb5beb2, roughness:1 });
+  const ground = new THREE.Mesh(new THREE.PlaneGeometry(420, 420), groundMat);
+  ground.rotation.x = -Math.PI/2; ground.position.y = -0.5; ground.receiveShadow = true; scene.add(ground);
+
+  const C = SPEC.cover, coverCx = (C.x0 + C.x1)/2, coverCz = (C.z0 + C.z1)/2;
+  const slabMat = new THREE.MeshStandardMaterial({ color:0xc4c6c1, roughness:0.95 });
+  box(C.x1 - C.x0, 0.06, C.z1 - C.z0, slabMat, coverCx, SLAB_Y - 0.03, coverCz, siteGroup).castShadow = false;
+
+  const canopy = new THREE.Group(); siteGroup.add(canopy);
+  const steel = new THREE.MeshStandardMaterial({ color:0x3a4144, roughness:0.5, metalness:0.5 });
+  const postXs = [], rowZs = [];
+  for (let x = C.x0; x <= C.x1 + 0.01; x += 20) postXs.push(x <= C.x0 + 0.01 ? x + 0.25 : x >= C.x1 - 0.01 ? x - 0.25 : x);
+  for (let z = C.z0 + 20; z <= C.z1 + 0.01; z += 20) rowZs.push(z >= C.z1 - 0.01 ? z - 0.25 : z);
+  rowZs.forEach(z => postXs.forEach(x => box(0.5, C.h - SLAB_Y, 0.5, steel, x, (C.h + SLAB_Y)/2, z, canopy)));
+  [postXs[0], postXs[postXs.length - 1]].forEach(x => box(0.5, C.h - SLAB_Y, 0.5, steel, x, (C.h + SLAB_Y)/2, C.z0 + 0.5, canopy));
+  [C.z0 + 0.5, ...rowZs].forEach(z => box(C.x1 - C.x0, 0.7, 0.4, steel, coverCx, C.h - 0.35, z, canopy));
+  postXs.forEach(x => box(0.4, 0.7, C.z1 - C.z0, steel, x, C.h - 0.35, coverCz, canopy));
+  const canopyMat = new THREE.MeshStandardMaterial({ color:0xdfe9ec, roughness:0.3, transparent:true, opacity:0.22, side:THREE.DoubleSide, depthWrite:false });
+  const canopyRoof = new THREE.Mesh(new THREE.PlaneGeometry(C.x1 - C.x0, C.z1 - C.z0), canopyMat);
+  canopyRoof.rotation.x = -Math.PI/2; canopyRoof.position.set(coverCx, C.h + 0.02, coverCz); canopy.add(canopyRoof);
+
+  const steelDark = new THREE.MeshStandardMaterial({ color:0x7d3220, roughness:0.6, metalness:0.25 });
+  const floorMat = new THREE.MeshStandardMaterial({ map:plywood, roughness:0.85 });
+  const slab = new THREE.Mesh(new THREE.BoxGeometry(L, 0.5, W), [steelDark, steelDark, floorMat, steelDark, steelDark, steelDark]);
+  slab.position.y = -0.25; slab.receiveShadow = true; scene.add(slab);
+  [[X0, Z0], [X0, Z1], [X1, Z0], [X1, Z1]].forEach(([x, z]) => box(0.38, H + 0.5, 0.38, steelDark, x - Math.sign(x)*0.17, (H - 0.5)/2, z - Math.sign(z)*0.17));
+  box(L, 0.3, 0.26, steelDark, 0, H + 0.02, Z1 - 0.11);
+  box(L, 0.3, 0.26, steelDark, 0, H + 0.02, Z0 + 0.11);
+
+  /* ---------- Walls with openings ---------- */
+  const walls = [];
+  function rectsForWall(a, b, openings){
+    const rs = []; let cur = a;
+    [...openings].sort((p, q) => p.x0 - q.x0).forEach(o => {
+      if (o.x0 > cur) rs.push({ u0:cur, u1:o.x0, y0:0, y1:H });
+      if ((o.y0 || 0) > 0) rs.push({ u0:o.x0, u1:o.x1, y0:0, y1:o.y0 });
+      if (o.y1 < H) rs.push({ u0:o.x0, u1:o.x1, y0:o.y1, y1:H });
+      cur = o.x1;
+    });
+    if (cur < b) rs.push({ u0:cur, u1:b, y0:0, y1:H });
+    return rs;
+  }
+  function trackMat(g, mat, base, always){
+    mat.userData.base = base; mat.userData.always = !!always;
+    mat.transparent = base < 1 || !!always; mat.opacity = base;
+    if (base < 1) mat.depthWrite = false;
+    g.userData.mats.push(mat); return mat;
+  }
+  function makeWall(side, openings){
+    const g = new THREE.Group(); g.userData = { side, mats:[], f:1, cur:1 };
+    const inner = trackMat(g, new THREE.MeshStandardMaterial({ color:0xe9e4d6, roughness:0.92 }), 1);
+    const edge  = trackMat(g, new THREE.MeshStandardMaterial({ color:0x8a3925, roughness:0.7 }), 1);
+    const along = side === 'front' || side === 'back';
+    const a = along ? X0 : Z0 + T, b = along ? X1 : Z1 - T;
+    rectsForWall(a, b, openings).forEach(r => {
+      const w = r.u1 - r.u0, h = r.y1 - r.y0, um = (r.u0 + r.u1)/2, ym = (r.y0 + r.y1)/2;
+      const tex = corrugated.clone(); tex.needsUpdate = true; tex.repeat.set(w/0.9, 1);
+      const outer = trackMat(g, new THREE.MeshStandardMaterial({ map:tex, roughness:0.55, metalness:0.2 }), 1);
+      let geo, mats, pos;
+      if (side === 'front')      { geo = new THREE.BoxGeometry(w, h, T); mats = [edge, edge, edge, edge, outer, inner]; pos = [um, ym, Z1 - T/2]; }
+      else if (side === 'back')  { geo = new THREE.BoxGeometry(w, h, T); mats = [edge, edge, edge, edge, inner, outer]; pos = [um, ym, Z0 + T/2]; }
+      else if (side === 'right') { geo = new THREE.BoxGeometry(T, h, w); mats = [outer, inner, edge, edge, edge, edge]; pos = [X1 - T/2, ym, um]; }
+      else                       { geo = new THREE.BoxGeometry(T, h, w); mats = [inner, outer, edge, edge, edge, edge]; pos = [X0 + T/2, ym, um]; }
+      const m = new THREE.Mesh(geo, mats); m.position.set(...pos); m.castShadow = true; m.receiveShadow = true; g.add(m);
+    });
+    scene.add(g); walls.push(g); return g;
+  }
+  function wallMats(g){
+    if (!g.userData.frame) {
+      g.userData.frame = trackMat(g, new THREE.MeshStandardMaterial({ color:0x3a4144, roughness:0.4, metalness:0.6 }), 1);
+      g.userData.glass = trackMat(g, new THREE.MeshStandardMaterial({ color:0xbfe1ea, roughness:0.05, metalness:0.1 }), 0.26, true);
+      g.userData.bface = trackMat(g, new THREE.MeshStandardMaterial({ color:0xf7f7f3, roughness:0.35 }), 1);
+      g.userData.brim  = trackMat(g, new THREE.MeshStandardMaterial({ color:0x9aa3a6, roughness:0.4, metalness:0.5 }), 1);
+    }
+    return g.userData;
+  }
+  function framedPane(g, x0, x1, y0, y1, z, mullion){
+    const { frame, glass } = wallMats(g); const f = 0.17, d = T + 0.08;
+    box(x1 - x0, f, d, frame, (x0 + x1)/2, y1 - f/2, z, g);
+    box(x1 - x0, f, d, frame, (x0 + x1)/2, y0 + f/2, z, g);
+    box(f, y1 - y0, d, frame, x0 + f/2, (y0 + y1)/2, z, g);
+    box(f, y1 - y0, d, frame, x1 - f/2, (y0 + y1)/2, z, g);
+    if (mullion) box(f*0.8, y1 - y0, d, frame, (x0 + x1)/2, (y0 + y1)/2, z, g);
+    box(x1 - x0 - 2*f, y1 - y0 - 2*f, 0.04, glass, (x0 + x1)/2, (y0 + y1)/2, z, g).castShadow = false;
+  }
+
+  // Hanging wipe boards in landscape, 1′6″ wide × 1′ tall, on four rails
+  const boardGroups = []; let boardCount = 0;
+  const BW = 1.5, BH = 1, BROWS = [2.4, 3.6, 4.8, 6.0];
+  function boardGrid(wall, side, centers){
+    const { bface, brim } = wallMats(wall);
+    const grp = new THREE.Group(); wall.add(grp); boardGroups.push(grp);
+    const d = 0.05, lo = Math.min(...centers) - 0.95, hi = Math.max(...centers) + 0.95;
+    centers.forEach(u => BROWS.forEach(y => {
+      boardCount++;
+      if (side === 'front') box(BW, BH, d, [brim, brim, brim, brim, brim, bface], u, y, ZF - 0.045, grp);
+      else if (side === 'left') box(d, BH, BW, [bface, brim, brim, brim, brim, brim], X0 + T + 0.045, y, u, grp);
+      else box(d, BH, BW, [brim, bface, brim, brim, brim, brim], X1 - T - 0.045, y, u, grp);
+    }));
+    BROWS.forEach(r => {
+      const y = r + BH/2 + 0.1;
+      if (side === 'front') box(hi - lo, 0.06, 0.06, brim, (lo + hi)/2, y, ZF - 0.05, grp);
+      else if (side === 'left') box(0.06, 0.06, hi - lo, brim, X0 + T + 0.05, y, (lo + hi)/2, grp);
+      else box(0.06, 0.06, hi - lo, brim, X1 - T - 0.05, y, (lo + hi)/2, grp);
+    });
+  }
+
+  // Door wall (front, z+): side door, sliding glass doors, boards inside
+  const front = makeWall('front', [
+    { x0:SPEC.sideDoor.x0, x1:SPEC.sideDoor.x1, y0:0, y1:SPEC.sideDoor.y1 },
+    { x0:SPEC.sliding.x0,  x1:SPEC.sliding.x1,  y0:0, y1:SPEC.sliding.y1 }
+  ]);
+  {
+    const zc = Z1 - T/2, mid = (SPEC.sliding.x0 + SPEC.sliding.x1)/2;
+    framedPane(front, SPEC.sliding.x0, mid + 0.1, 0.02, SPEC.sliding.y1, zc - 0.05, false);
+    framedPane(front, mid - 0.1, SPEC.sliding.x1, 0.02, SPEC.sliding.y1, zc + 0.05, false);
+    const { frame, glass } = wallMats(front);
+    const doorMat = trackMat(front, new THREE.MeshStandardMaterial({ color:0x55625d, roughness:0.6, metalness:0.3 }), 1);
+    const dx0 = SPEC.sideDoor.x0, dx1 = SPEC.sideDoor.x1, dh = SPEC.sideDoor.y1;
+    box(dx1 - dx0, dh, 0.12, doorMat, (dx0 + dx1)/2, dh/2, zc, front);
+    box(0.9, 1.6, 0.14, glass, (dx0 + dx1)/2, 4.9, zc, front).castShadow = false;
+    box(0.35, 0.08, 0.3, frame, dx1 - 0.4, 3.4, zc, front);
+  }
+  boardGrid(front, 'front', [-14.25, -12.55, -10.85, -9.15, -7.45, -5.75]);
+  boardGrid(front, 'front', [11.6, 13.3, 15.0, 16.7, 18.4]);
+  // Large wipe board under the projector shelf, behind the teacher desk
+  const bigBoard = { x0:4.5, x1:10.4, y0:1.0, y1:6.75 };
+  {
+    const { bface, brim } = wallMats(front);
+    const bw = bigBoard.x1 - bigBoard.x0, bh = bigBoard.y1 - bigBoard.y0, cx = (bigBoard.x0 + bigBoard.x1)/2;
+    box(bw, bh, 0.04, [brim, brim, brim, brim, brim, bface], cx, (bigBoard.y0 + bigBoard.y1)/2, ZF - 0.025, front);
+    box(bw + 0.12, 0.08, 0.06, brim, cx, bigBoard.y1 + 0.04, ZF - 0.04, front);
+    box(bw + 0.12, 0.08, 0.06, brim, cx, bigBoard.y0 - 0.04, ZF - 0.04, front);
+  }
+
+  // Board wall (back, z−): windows, whiteboard, projection surface
+  const back = makeWall('back', [
+    { x0:SPEC.winL.x0, x1:SPEC.winL.x1, y0:SPEC.winL.y0, y1:SPEC.winL.y1 },
+    { x0:SPEC.winR.x0, x1:SPEC.winR.x1, y0:SPEC.winR.y0, y1:SPEC.winR.y1 }
+  ]);
+  framedPane(back, SPEC.winL.x0, SPEC.winL.x1, SPEC.winL.y0, SPEC.winL.y1, Z0 + T/2, true);
+  framedPane(back, SPEC.winR.x0, SPEC.winR.x1, SPEC.winR.y0, SPEC.winR.y1, Z0 + T/2, true);
+  {
+    const { frame } = wallMats(back);
+    const bw = SPEC.board.x1 - SPEC.board.x0, bh = SPEC.board.y1 - SPEC.board.y0, by = (SPEC.board.y0 + SPEC.board.y1)/2;
+    const face = trackMat(back, new THREE.MeshStandardMaterial({ map:boardTex, roughness:0.35 }), 1);
+    const plain = trackMat(back, new THREE.MeshStandardMaterial({ color:0xf3f3ef, roughness:0.5 }), 1);
+    const wb = new THREE.Mesh(new THREE.BoxGeometry(bw, bh, 0.06), [plain, plain, plain, plain, face, plain]);
+    wb.position.set(0, by, ZB + 0.03); wb.receiveShadow = true; back.add(wb);
+    box(bw + 0.2, 0.1, 0.1, frame, 0, SPEC.board.y1 + 0.05, ZB + 0.05, back);
+    box(bw + 0.2, 0.1, 0.1, frame, 0, SPEC.board.y0 - 0.05, ZB + 0.05, back);
+    box(bw, 0.06, 0.28, frame, 0, SPEC.board.y0 - 0.12, ZB + 0.16, back);
+  }
+  const projOn  = trackMat(back, new THREE.MeshStandardMaterial({ map:projTex, emissive:0xffffff, emissiveMap:projTex, emissiveIntensity:0.7, roughness:0.9 }), 1);
+  const projOff = trackMat(back, new THREE.MeshStandardMaterial({ color:0xf1f1ec, roughness:0.95 }), 1);
+  const projSurface = new THREE.Mesh(new THREE.BoxGeometry(SPEC.proj.x1 - SPEC.proj.x0, SPEC.proj.y1 - SPEC.proj.y0, 0.03), [projOff, projOff, projOff, projOff, projOn, projOff]);
+  projSurface.position.set(projCx, (SPEC.proj.y0 + SPEC.proj.y1)/2, ZB + 0.015); back.add(projSurface);
+
+  // End walls with board grids; the cargo-door end carries lock rods and an ISO stencil
+  const left = makeWall('left', []);
+  const right = makeWall('right', []);
+  boardGrid(left, 'left', [-2.55, -0.85, 0.85, 2.55]);
+  boardGrid(right, 'right', [-2.55, -0.85, 0.85, 2.55]);
+  {
+    const rod = trackMat(right, new THREE.MeshStandardMaterial({ color:0x6b2b1b, roughness:0.5, metalness:0.5 }), 1);
+    [-3, -1.2, 1.2, 3].forEach(z => cyl(0.06, H - 0.6, rod, X1 + 0.08, H/2, z, right));
+    const decal = trackMat(right, new THREE.MeshBasicMaterial({ map:stencilTex }), 1, true);
+    const p = new THREE.Mesh(new THREE.PlaneGeometry(2.6, 1.3), decal);
+    p.rotation.y = Math.PI/2; p.position.set(X1 + 0.09, H - 1.3, -2.1); right.add(p);
+  }
+  // Projected images for end-wall campfires (any wall can be a projection space)
+  const endImg = { w:6.6, h:6.6*9/16, y:5.15 };
+  function endPlane(wall, side){
+    const mat = trackMat(wall, new THREE.MeshBasicMaterial({ map:projTex }), 1);
+    const p = new THREE.Mesh(new THREE.PlaneGeometry(endImg.w, endImg.h), mat);
+    p.rotation.y = side === 'left' ? Math.PI/2 : -Math.PI/2;
+    p.position.set(side === 'left' ? X0 + T + 0.1 : X1 - T - 0.1, endImg.y, 0);
+    p.visible = false; wall.add(p); return p;
+  }
+  const endPlanes = { left:endPlane(left, 'left'), right:endPlane(right, 'right') };
+
+  // Container roof
+  const roofTex = corrugated.clone(); roofTex.needsUpdate = true; roofTex.repeat.set(L/0.9, 1);
+  const roof = new THREE.Mesh(new THREE.BoxGeometry(L, 0.14, W), [steelDark, steelDark, new THREE.MeshStandardMaterial({ map:roofTex, roughness:0.6, metalness:0.2 }), new THREE.MeshStandardMaterial({ color:0xe9e4d6, roughness:0.92 }), steelDark, steelDark]);
+  roof.position.y = H + 0.07; roof.castShadow = true; roof.visible = false; scene.add(roof);
+
+  // 1 ft floor grid
+  const gridPts = [];
+  for (let x = Math.ceil(X0 + T); x <= X1 - T; x++) gridPts.push(x, 0.012, Z0 + T, x, 0.012, Z1 - T);
+  for (let z = Math.ceil(Z0 + T); z <= Z1 - T; z++) gridPts.push(X0 + T, 0.012, z, X1 - T, 0.012, z);
+  const gridGeo = new THREE.BufferGeometry(); gridGeo.setAttribute('position', new THREE.Float32BufferAttribute(gridPts, 3));
+  const grid = new THREE.LineSegments(gridGeo, new THREE.LineBasicMaterial({ color:0x3b2a12, transparent:true, opacity:0.18 }));
+  scene.add(grid);
+
+  /* ---------- Ceiling tech grid: drop points for lights and projectors ---------- */
+  const ceil = new THREE.Group(); scene.add(ceil);
+  const Y = SPEC.ceilY;
+  [-2.6, 0, 2.6].forEach(z => box(L - 1, 0.12, 0.12, metal, 0, Y, z, ceil));
+  for (let x = -18; x <= 18; x += 4) box(0.12, 0.12, W - 0.6, metal, x, Y, 0, ceil);
+  const lampMat = new THREE.MeshBasicMaterial({ color:0xfff1c9 });
+  const fixtureMat = new THREE.MeshStandardMaterial({ color:0x1f2423, roughness:0.4, metalness:0.5 });
+  [-16, -8, 0, 8, 16].forEach(x => [-2.6, 2.6].forEach(z => {
+    cyl(0.03, 0.35, metal, x + 1, Y - 0.2, z, ceil);
+    cyl(0.13, 0.36, fixtureMat, x + 1, Y - 0.5, z, ceil);
+    const lens = new THREE.Mesh(new THREE.CircleGeometry(0.11, 16), lampMat); lens.rotation.x = Math.PI/2; lens.position.set(x + 1, Y - 0.69, z); ceil.add(lens);
+  }));
+  function dropProjector(x, dir){
+    cyl(0.04, 0.4, metal, x, Y - 0.22, 0, ceil);
+    box(0.9, 0.32, 0.8, new THREE.MeshStandardMaterial({ color:0xeceeed, roughness:0.4 }), x, Y - 0.58, 0, ceil);
+    cyl(0.11, 0.12, fixtureMat, x + dir*0.5, Y - 0.58, 0, ceil, 0, Math.PI/2);
+    return new THREE.Vector3(x + dir*0.57, Y - 0.58, 0);
+  }
+  const dropLensL = dropProjector(X0 + T + 6.2, -1);
+  const dropLensR = dropProjector(X1 - T - 6.2, 1);
+  // Directional microphones for recording the whole room or video conferencing
+  [-10, 2, 14].forEach(x => {
+    cyl(0.02, 0.8, metal, x, Y - 0.45, 0.9, ceil);
+    const capsule = cyl(0.07, 0.5, fixtureMat, x, Y - 0.95, 0.9, ceil, 0.55);
+    capsule.castShadow = false;
+  });
+  // Pull-down power drops
+  const cordMat = new THREE.MeshStandardMaterial({ color:0xe2b100, roughness:0.6 });
+  const boxMat = new THREE.MeshStandardMaterial({ color:0xd2541e, roughness:0.5 });
+  // Each drop hangs from a reel clamped under a cross bar of the grid
+  const REEL_Y = Y - 0.06 - 0.09;
+  const drops = [[-14, 1.3], [-10, -1.3], [-2, 1.3], [2, -1.3], [10, 1.3], [14, -1.3]].map(([x, z]) => {
+    box(0.3, 0.18, 0.3, fixtureMat, x, REEL_Y, z, ceil);
+    const cord = cyl(0.035, 1, cordMat, x, Y, z, ceil); const head = box(0.4, 0.3, 0.28, boxMat, x, Y, z, ceil);
+    return { cord, head };
+  });
+  function setDrops(down){
+    const top = REEL_Y - 0.09, len = down ? 3.6 : 0.04;
+    drops.forEach(({ cord, head }) => { cord.scale.y = len; cord.position.y = top - len/2; head.position.y = top - len - 0.15; });
+  }
+  setDrops(false);
+  // Clip lights on the grid
+  const clipShade = new THREE.MeshStandardMaterial({ color:0x2f3533, roughness:0.4, metalness:0.5, side:THREE.DoubleSide });
+  [[-14, 2.6, -0.7], [-6, 2.6, -0.7], [6, 2.6, -0.7], [14, 2.6, -0.7], [-18, -2.6, 0.7], [18, -2.6, 0.7]].forEach(([x, z, tilt]) => {
+    const c = new THREE.Mesh(new THREE.ConeGeometry(0.2, 0.32, 16, 1, true), clipShade);
+    c.position.set(x, Y - 0.2, z); c.rotation.x = Math.PI + tilt; ceil.add(c);
+    const bulb = new THREE.Mesh(new THREE.SphereGeometry(0.08, 10, 8), lampMat); bulb.position.set(x, Y - 0.27, z + (tilt < 0 ? 0.06 : -0.06)); ceil.add(bulb);
+  });
+  // Starlink dish on the top rail
+  {
+    const dishMat = new THREE.MeshStandardMaterial({ color:0xf1f2f0, roughness:0.4 });
+    box(0.3, 0.5, 0.3, metal, 16.5, H + 0.42, Z0 + 0.6);
+    const dish = box(1.9, 0.08, 1.25, dishMat, 16.5, H + 0.85, Z0 + 0.6); dish.rotation.x = 0.5;
+  }
+
+  /* ---------- Shelf projector and beams ---------- */
+  const shelfMat = new THREE.MeshStandardMaterial({ color:0xd9c29a, roughness:0.7 });
+  const shelfZ = ZF - 0.65;
+  box(2.4, 0.1, 1.3, shelfMat, projCx, SPEC.shelfY, shelfZ);
+  box(0.08, 0.7, 0.9, metal, projCx - 1.0, SPEC.shelfY - 0.4, ZF - 0.45);
+  box(0.08, 0.7, 0.9, metal, projCx + 1.0, SPEC.shelfY - 0.4, ZF - 0.45);
+  box(1.1, 0.36, 0.9, new THREE.MeshStandardMaterial({ color:0xeceeed, roughness:0.4 }), projCx, SPEC.shelfY + 0.23, shelfZ - 0.05);
+  const lensZ = shelfZ - 0.5;
+  cyl(0.12, 0.12, fixtureMat, projCx, SPEC.shelfY + 0.23, lensZ, scene, Math.PI/2);
+  const beamMat = new THREE.MeshBasicMaterial({ color:0xfff1c2, transparent:true, opacity:0.09, side:THREE.DoubleSide, depthWrite:false, blending:THREE.AdditiveBlending });
+  function makeBeam(apex, corners){
+    const A = [apex.x, apex.y, apex.z], pts = [];
+    for (let i = 0; i < 4; i++) pts.push(...A, ...corners[i], ...corners[(i + 1) % 4]);
+    const geo = new THREE.BufferGeometry(); geo.setAttribute('position', new THREE.Float32BufferAttribute(pts, 3));
+    const m = new THREE.Mesh(geo, beamMat); scene.add(m); return m;
+  }
+  const zs = ZB + 0.05;
+  const beam = makeBeam(new THREE.Vector3(projCx, SPEC.shelfY + 0.23, lensZ - 0.06),
+    [[SPEC.proj.x0, SPEC.proj.y0, zs], [SPEC.proj.x1, SPEC.proj.y0, zs], [SPEC.proj.x1, SPEC.proj.y1, zs], [SPEC.proj.x0, SPEC.proj.y1, zs]]);
+  const ey0 = endImg.y - endImg.h/2, ey1 = endImg.y + endImg.h/2, ez = endImg.w/2;
+  const xl = X0 + T + 0.1, xr = X1 - T - 0.1;
+  const endBeams = {
+    left:  makeBeam(dropLensL, [[xl, ey0, -ez], [xl, ey0, ez], [xl, ey1, ez], [xl, ey1, -ez]]),
+    right: makeBeam(dropLensR, [[xr, ey0, -ez], [xr, ey0, ez], [xr, ey1, ez], [xr, ey1, -ez]])
+  };
+
+  /* ---------- Pull-down screens, clip-in projectors and whole-room projection ---------- */
+  const LBACK = X1 - X0 - 2*T, LEND = Z1 - Z0 - 2*T, PERIM = 2*LBACK + 2*LEND;
+  const SY0 = 0.05, SY1 = Y - 0.05, SH = SY1 - SY0;
+  function drawMap(g, w, h){
+    g.fillStyle = '#0f2a2e'; g.fillRect(0, 0, w, h);
+    const r = seeded(5);
+    g.fillStyle = '#123f57'; g.beginPath(); g.moveTo(w, h*0.55); g.bezierCurveTo(w*0.85, h*0.7, w*0.8, h*0.85, w*0.62, h); g.lineTo(w, h); g.closePath(); g.fill();
+    for (let k = 1; k <= 10; k++) {
+      g.strokeStyle = `rgba(170,220,200,${0.32 - k*0.022})`; g.lineWidth = 2; g.beginPath();
+      for (let a = 0; a <= 64; a++) { const t = a/64*Math.PI*2, rr = k*38*(1 + 0.18*Math.sin(t*3 + k) + 0.08*Math.cos(t*5)); const x = 300 + Math.cos(t)*rr*1.2, y = 260 + Math.sin(t)*rr; a ? g.lineTo(x, y) : g.moveTo(x, y); }
+      g.stroke();
+    }
+    g.strokeStyle = '#4fb3d9'; g.lineWidth = 10; g.lineCap = 'round';
+    g.beginPath(); g.moveTo(330, 290); g.bezierCurveTo(420, 420, 520, 520, 600, 600); g.bezierCurveTo(680, 680, 760, 760, 830, 830); g.stroke();
+    const S = [['Mountain', 300, 250], ['Waterfall', 410, 400], ['River', 600, 590], ['Farm', 210, 640], ['Horse ranch', 720, 380], ['Mangrove beach', 830, 830]];
+    const hub = [470, 700];
+    g.setLineDash([10, 10]); g.strokeStyle = 'rgba(240,180,41,.7)'; g.lineWidth = 3;
+    S.forEach(([, x, y]) => { g.beginPath(); g.moveTo(hub[0], hub[1]); g.lineTo(x, y); g.stroke(); });
+    g.setLineDash([]);
+    S.forEach(([t, x, y]) => {
+      g.fillStyle = '#eef3ef'; g.beginPath(); g.arc(x, y, 12, 0, Math.PI*2); g.fill();
+      g.fillStyle = '#eef3ef'; g.font = "600 30px 'IBM Plex Sans', sans-serif"; g.fillText(t, x + 20, y + 10);
+    });
+    g.fillStyle = '#f0b429'; g.beginPath(); g.arc(hub[0], hub[1], 20, 0, Math.PI*2); g.fill();
+    g.font = "800 40px 'Big Shoulders Stencil Display', Impact, sans-serif"; g.fillText('MVC · LAUNCHPAD', hub[0] + 30, hub[1] + 14);
+    g.fillStyle = '#f0b429'; g.font = "800 64px 'Big Shoulders Stencil Display', Impact, sans-serif"; g.fillText('OUR LEARNING LANDSCAPE', 48, 90);
+    g.fillStyle = 'rgba(238,243,239,.6)'; g.font = "400 22px 'IBM Plex Mono', monospace"; g.fillText('central screen · floor to ceiling', 52, 128);
+    for (let i = 0; i < 40; i++) { g.fillStyle = `rgba(238,243,239,${0.05 + r()*0.08})`; g.fillRect(r()*w, r()*h, 2, 2); }
+  }
+  function drawPano(g, w, h){
+    const r = seeded(17), hz = h*0.42;
+    let grd = g.createLinearGradient(0, 0, 0, hz); grd.addColorStop(0, '#f6c9a0'); grd.addColorStop(1, '#9fd3df');
+    g.fillStyle = grd; g.fillRect(0, 0, w, hz);
+    grd = g.createLinearGradient(0, hz, 0, h); grd.addColorStop(0, '#2c7f95'); grd.addColorStop(1, '#0b3443');
+    g.fillStyle = grd; g.fillRect(0, hz, w, h - hz);
+    g.fillStyle = '#5c8f8a'; g.beginPath(); g.moveTo(0, hz);
+    for (let x = 0; x <= w; x += 16) g.lineTo(x, hz - 18 - 14*Math.sin(x/170) - 8*Math.sin(x/53));
+    g.lineTo(w, hz); g.closePath(); g.fill();
+    for (let x = 60; x < w; x += 170 + r()*120) {
+      const cy = hz - 40 - r()*30, s = 0.8 + r()*0.6;
+      g.strokeStyle = '#4a3322'; g.lineWidth = 4;
+      for (let k = -3; k <= 3; k++) { g.beginPath(); g.moveTo(x, cy + 20*s); g.quadraticCurveTo(x + k*14*s, hz + 10, x + k*26*s, hz + 70*s + r()*40); g.stroke(); }
+      g.fillStyle = '#25583d'; [[0, 0, 38], [-30, 12, 26], [30, 12, 26], [-14, -18, 24], [16, -16, 24]].forEach(([dx, dy, rr]) => { g.beginPath(); g.arc(x + dx*s, cy + dy*s, rr*s, 0, Math.PI*2); g.fill(); });
+    }
+    for (let i = 0; i < 70; i++) {
+      const x = r()*w, y = hz + 110 + r()*(h - hz - 130), s = 6 + r()*8;
+      g.fillStyle = ['#f2d24b', '#f4b6a6', '#bcd4e6', '#e8f4f8'][i % 4];
+      g.beginPath(); g.ellipse(x, y, s, s*0.45, 0, 0, Math.PI*2); g.fill();
+      g.beginPath(); g.moveTo(x - s, y); g.lineTo(x - s*1.6, y - s*0.5); g.lineTo(x - s*1.6, y + s*0.5); g.closePath(); g.fill();
+    }
+    g.strokeStyle = 'rgba(255,255,255,.12)'; g.lineWidth = 2;
+    for (let i = 0; i < 60; i++) { const x = r()*w, y = hz + 20 + r()*60; g.beginPath(); g.moveTo(x, y); g.quadraticCurveTo(x + 20, y - 6, x + 40, y); g.stroke(); }
+    g.fillStyle = 'rgba(255,255,255,.88)'; g.font = "800 46px 'Big Shoulders Stencil Display', Impact, sans-serif";
+    ['ROOTS', 'TIDES', 'NURSERY', 'CARBON', 'SHELTER'].forEach((t, i) => g.fillText(t, 300 + i*820, h - 24));
+  }
+  const mapTex = canvasTex(1024, 960, drawMap);
+  const panoTex = canvasTex(4096, 348, drawPano);
+  const panoMats = [];
+  function panoMat(u0, w){
+    const t = panoTex.clone(); t.needsUpdate = true; t.wrapS = THREE.RepeatWrapping;
+    t.repeat.set(w/PERIM, 1); t.offset.set(u0/PERIM, 0);
+    const m = new THREE.MeshBasicMaterial({ map:t }); panoMats.push(m); return m;
+  }
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => {
+    mapTex.userData.redraw(); panoTex.userData.redraw(); panoMats.forEach(m => { m.map.needsUpdate = true; });
+  });
+  const blankMat = new THREE.MeshStandardMaterial({ color:0xf4f4f0, roughness:0.9, side:THREE.DoubleSide });
+  const pullScreens = [];
+  function pullDown(x0, x1, z, onMat, label){
+    const w = x1 - x0, cx = (x0 + x1)/2;
+    box(w + 0.3, 0.28, 0.28, metal, cx, Y + 0.12, z, ceil);
+    const geo = new THREE.PlaneGeometry(w, SH); geo.translate(0, -SH/2, 0);
+    const sheet = new THREE.Mesh(geo, blankMat); sheet.position.set(cx, SY1, z); sheet.scale.y = 0.001; sheet.visible = false; scene.add(sheet);
+    const bar = box(w, 0.08, 0.08, metal, cx, SY1, z); bar.visible = false;
+    const sc = { sheet, bar, onMat, cur:0, target:0, w, x0, x1, z, label };
+    pullScreens.push(sc); return sc;
+  }
+  const centralScreen = pullDown(-4.3, 4.3, ZB + 0.36, new THREE.MeshBasicMaterial({ map:mapTex }), 'Pull-down screen');
+  const winScreens = [
+    pullDown(SPEC.winL.x0 - 0.25, SPEC.winL.x1 + 0.25, ZB + 0.14, null, 'Window screen'),
+    pullDown(SPEC.winR.x0 - 0.25, SPEC.winR.x1 + 0.25, ZB + 0.14, null, 'Window screen')
+  ];
+  winScreens.forEach(sc => { sc.onMat = panoMat(sc.x0 - (X0 + T), sc.w); });
+  function updateScreen(sc){
+    sc.cur += (sc.target - sc.cur)*(reduceMotion.matches ? 1 : 0.1);
+    if (Math.abs(sc.cur - sc.target) < 0.002) sc.cur = sc.target;
+    const v = sc.cur > 0.004;
+    sc.sheet.visible = v; sc.bar.visible = v;
+    sc.sheet.scale.y = Math.max(sc.cur, 0.001); sc.bar.position.y = SY1 - SH*sc.cur;
+  }
+  // Whole-room projection surfaces, mapped as one panorama around the room
+  const fills = [];
+  function fillPlane(w, cx, cz, rotY, u0){
+    const m = new THREE.Mesh(new THREE.PlaneGeometry(w, SH), panoMat(u0, w));
+    m.position.set(cx, (SY0 + SY1)/2, cz); m.rotation.y = rotY; m.visible = false; scene.add(m); fills.push(m); return m;
+  }
+  fillPlane(-4.3 - (X0 + T), (X0 + T - 4.3)/2, ZB + 0.45, 0, 0);
+  fillPlane(X1 - T - 4.3, (X1 - T + 4.3)/2, ZB + 0.45, 0, 4.3 - (X0 + T));
+  fillPlane(LEND, X1 - T - 0.12, 0, -Math.PI/2, LBACK);
+  [[-15.3, -4.2], [10.4, X1 - T]].forEach(([a, b]) => fillPlane(b - a, (a + b)/2, ZF - 0.12, Math.PI, LBACK + LEND + (X1 - T - b)));
+  fillPlane(LEND, X0 + T + 0.12, 0, Math.PI/2, 2*LBACK + LEND);
+  // Clip-in throw projectors
+  const clipProjMat = new THREE.MeshStandardMaterial({ color:0xeceeed, roughness:0.4 });
+  function clipProjector(x, z, dirZ){
+    const g = new THREE.Group(); ceil.add(g);
+    box(0.06, 0.3, 0.06, metal, x, Y - 0.15, z, g);
+    box(0.8, 0.28, 0.7, clipProjMat, x, Y - 0.42, z, g);
+    cyl(0.1, 0.1, fixtureMat, x, Y - 0.42, z + dirZ*0.38, g, Math.PI/2);
+    g.visible = false;
+    return { g, lens:new THREE.Vector3(x, Y - 0.42, z + dirZ*0.42) };
+  }
+  const cpCentral = clipProjector(0, 0, -1);
+  const cpWin = [clipProjector(-12, 0, -1), clipProjector(16, 0, -1)];
+  const cpFront = [clipProjector(-6, 0, 1), clipProjector(8, 0, 1)];
+  const screenBeam = sc => makeBeam(cpCentral.lens, [[sc.x0, SY0, sc.z + 0.02], [sc.x1, SY0, sc.z + 0.02], [sc.x1, SY1, sc.z + 0.02], [sc.x0, SY1, sc.z + 0.02]]);
+  const centralBeam = screenBeam(centralScreen);
+  const winBeams = winScreens.map((sc, i) => makeBeam(cpWin[i].lens, [[sc.x0, SY0, sc.z + 0.02], [sc.x1, SY0, sc.z + 0.02], [sc.x1, SY1, sc.z + 0.02], [sc.x0, SY1, sc.z + 0.02]]));
+  [centralBeam, ...winBeams].forEach(b => { b.visible = false; });
+  const PMODES = {
+    standard: { label:'Standard', desc:'The short-throw projector fills the wall beside the whiteboard.' },
+    central:  { label:'Central screen', desc:'A screen pulls down over the whiteboard, floor to ceiling, and a throw projector clipped into the ceiling grid makes it one big central visualization.' },
+    triptych: { label:'Center + windows', desc:'Screens also pull down over both windows, each fed by its own clip-in projector: three surfaces across the board wall.' },
+    room:     { label:'Whole room', desc:'Every wall becomes one projected display for an immersive exhibit, with the central screen as the centrepiece.' }
+  };
+  function applyProjMode(){
+    const m = state.pmode, on = tProj.checked, tri = m === 'triptych' || m === 'room';
+    centralScreen.target = m === 'standard' ? 0 : 1;
+    winScreens.forEach(sc => { sc.target = tri ? 1 : 0; });
+    pullScreens.forEach(sc => { sc.sheet.material = on ? sc.onMat : blankMat; });
+    fills.forEach(f => { f.visible = on && m === 'room'; });
+    cpCentral.g.visible = m !== 'standard';
+    cpWin.forEach(c => { c.g.visible = tri; });
+    cpFront.forEach(c => { c.g.visible = m === 'room'; });
+    centralBeam.visible = on && (m === 'central' || m === 'triptych');
+    winBeams.forEach(b => { b.visible = on && m === 'triptych'; });
+    applyProjection();
+  }
+
+  /* ---------- Outside: chalkboard and weatherproof lockers (part of the whole site) ---------- */
+  {
+    const ch = SPEC.chalk, cw = ch.x1 - ch.x0, chh = ch.y1 - ch.y0, cx = (ch.x0 + ch.x1)/2, cy = (ch.y0 + ch.y1)/2;
+    const wood = new THREE.MeshStandardMaterial({ color:0x8a6a48, roughness:0.6 });
+    const face = new THREE.MeshStandardMaterial({ map:chalkTex, roughness:0.95 });
+    const b = new THREE.Mesh(new THREE.BoxGeometry(cw, chh, 0.08), [wood, wood, wood, wood, face, wood]);
+    b.position.set(cx, cy, Z1 + 0.06); b.castShadow = true; siteGroup.add(b);
+    box(cw + 0.3, 0.14, 0.12, wood, cx, ch.y1 + 0.07, Z1 + 0.08, siteGroup);
+    box(cw + 0.3, 0.14, 0.3, wood, cx, ch.y0 - 0.07, Z1 + 0.17, siteGroup);
+  }
+  {
+    const lk = SPEC.lockers, body = new THREE.MeshStandardMaterial({ color:0x4f5d58, roughness:0.55, metalness:0.35 });
+    const door = new THREE.MeshStandardMaterial({ color:0x5f6f69, roughness:0.5, metalness:0.35 });
+    const plate = new THREE.MeshStandardMaterial({ color:0xe9e4d6, roughness:0.8 });
+    const z0 = Z1 + 0.1, y0 = -0.5;
+    for (let i = 0; i < lk.n; i++) {
+      const x = lk.x0 + lk.w*i + lk.w/2;
+      box(lk.w - 0.06, lk.h, lk.d, body, x, y0 + lk.h/2, z0 + lk.d/2, siteGroup);
+      box(lk.w - 0.22, lk.h - 0.4, 0.04, door, x, y0 + lk.h/2, z0 + lk.d + 0.02, siteGroup);
+      box(0.5, 0.25, 0.02, plate, x, y0 + lk.h - 0.7, z0 + lk.d + 0.05, siteGroup);
+      box(0.08, 0.6, 0.08, metal, x + lk.w/2 - 0.35, y0 + lk.h/2, z0 + lk.d + 0.07, siteGroup);
+    }
+    box(lk.n*lk.w + 0.4, 0.12, lk.d + 0.5, body, lk.x0 + lk.n*lk.w/2, y0 + lk.h + 0.06, z0 + lk.d/2 + 0.2, siteGroup);
+  }
+
+  /* ---------- Furniture ---------- */
+  const draggables = [];
+  const TD = 2.5 * Math.sin(Math.PI/3);  // trapezoid depth (half hexagon, 2′6″ sides)
+  function makeChair(color){
+    const c = new THREE.Group();
+    const m = new THREE.MeshStandardMaterial({ color, roughness:0.55 });
+    const legM = new THREE.MeshStandardMaterial({ color:0x2f3533, roughness:0.5, metalness:0.4 });
+    box(1.25, 0.12, 1.15, m, 0, 1.5, 0, c);
+    box(1.25, 0.95, 0.1, m, 0, 2.2, 0.55, c);
+    [[-0.5,-0.48],[0.5,-0.48],[-0.5,0.48],[0.5,0.48]].forEach(([x, z]) => cyl(0.04, 1.5, legM, x, 0.75, z, c));
+    c.userData = { draggable:false, name:'Chair', sub:'', zone:'in' };
+    scene.add(c); draggables.push(c);
+    return c;
+  }
+  function makeTable(n){
+    const g = new THREE.Group(), hh = TD/2;
+    const s = new THREE.Shape();
+    s.moveTo(-2.5, hh); s.lineTo(2.5, hh); s.lineTo(1.25, -hh); s.lineTo(-1.25, -hh); s.closePath();
+    const geo = new THREE.ExtrudeGeometry(s, { depth:0.1, bevelEnabled:false }); geo.rotateX(-Math.PI/2);
+    const top = new THREE.Mesh(geo, [new THREE.MeshStandardMaterial({ color:0xdcc79f, roughness:0.6 }), new THREE.MeshStandardMaterial({ color:0x6f6a60, roughness:0.6 })]);
+    top.position.y = 2.35; top.castShadow = true; top.receiveShadow = true; g.add(top);
+    const legM = new THREE.MeshStandardMaterial({ color:0x2f3533, roughness:0.5, metalness:0.4 });
+    [[-2.15, -hh + 0.2], [2.15, -hh + 0.2], [-1.0, hh - 0.2], [1.0, hh - 0.2]].forEach(([lx, lz]) => cyl(0.05, 2.35, legM, lx, 1.175, lz, g));
+    const items = new THREE.Group(); g.add(items);
+    g.userData = { draggable:true, name:`Table ${n}`, sub:'3 seats', items, zone:'in' };
+    scene.add(g); draggables.push(g); return g;
+  }
+  function makeDesk(){
+    const g = new THREE.Group(), s = SPEC.desk;
+    const top = new THREE.MeshStandardMaterial({ color:0x8a6a48, roughness:0.55 });
+    const leg = new THREE.MeshStandardMaterial({ color:0x2f3533, roughness:0.5, metalness:0.4 });
+    box(s, 0.12, s, top, 0, 2.44, 0, g);
+    [[-1,-1],[1,-1],[-1,1],[1,1]].forEach(([a, b]) => box(0.12, 2.38, 0.12, leg, a*(s/2 - 0.1), 1.19, b*(s/2 - 0.1), g));
+    box(s - 0.25, 1.5, 0.06, leg, 0, 1.55, s/2 - 0.1, g);
+    g.userData = { draggable:true, name:'Teacher desk', sub:`${s}′ × ${s}′`, zone:'in' };
+    scene.add(g); draggables.push(g); return g;
+  }
+  function makeMobile(n, x, z, rot){
+    const g = new THREE.Group();
+    const white = new THREE.MeshStandardMaterial({ color:0xf7f7f3, roughness:0.35 });
+    const edge = new THREE.MeshStandardMaterial({ color:0x3c7a6b, roughness:0.5 });
+    const frame = new THREE.MeshStandardMaterial({ color:0x2f3533, roughness:0.45, metalness:0.5 });
+    box(6, 0.1, 3, [edge, edge, white, edge, edge, edge], 0, 2.45, 0, g);
+    [-2.7, 2.7].forEach(fx => { box(0.12, 2.1, 2.5, frame, fx, 1.3, 0, g); box(0.2, 0.12, 2.6, frame, fx, 0.32, 0, g); });
+    box(5.3, 0.12, 0.12, frame, 0, 0.75, 0, g);
+    [[-2.7, -1.2], [-2.7, 1.2], [2.7, -1.2], [2.7, 1.2]].forEach(([cx, cz]) => cyl(0.14, 0.1, frame, cx, 0.14, cz, g, 0, Math.PI/2));
+    g.position.set(x, SLAB_Y, z); g.rotation.y = rot;
+    g.userData = { draggable:true, name:`Mobile table ${n}`, sub:'6′ × 3′ · casters', zone:'out', home:{ x, z, rot } };
+    siteGroup.add(g); draggables.push(g); return g;
+  }
+
+  const tableColors = [0xd99a00, 0x3c7a6b, 0x5d6b73, 0xc0573b];
+  const tables = [1, 2, 3, 4].map(makeTable);
+  const chairs = [];
+  tableColors.forEach(col => { for (let k = 0; k < 3; k++) chairs.push(makeChair(col)); });
+  const teacherChair = makeChair(0x2f3533); teacherChair.userData.name = 'Teacher chair';
+
+  /* ---------- Translucent student figures ---------- */
+  const figMat = new THREE.MeshStandardMaterial({ color:0x2a3a4a, transparent:true, opacity:0.38, roughness:0.9, depthWrite:false });
+  const noRay = () => {};
+  function fpart(geo, x, y, z, rx, parent){
+    const m = new THREE.Mesh(geo, figMat); m.position.set(x, y, z); m.rotation.x = rx || 0;
+    m.raycast = noRay; m.userData.noGlow = true; parent.add(m); return m;
+  }
+  function makeFigure(scale){
+    const g = new THREE.Group(), sit = new THREE.Group(), stand = new THREE.Group(); g.add(sit, stand);
+    const limb = (r, l) => new THREE.CylinderGeometry(r, r*0.9, l, 10);
+    // Seated, facing −z, on a chair seat
+    fpart(new THREE.SphereGeometry(0.34, 16, 12), 0, 3.75, 0.05, 0, sit);
+    fpart(new THREE.CylinderGeometry(0.36, 0.44, 1.6, 12), 0, 2.45, 0.1, -0.08, sit);
+    [-0.2, 0.2].forEach(x => { fpart(limb(0.15, 1.1), x, 1.75, -0.4, Math.PI/2, sit); fpart(limb(0.13, 1.6), x, 0.85, -0.95, 0, sit); fpart(limb(0.11, 1.2), x*2.2, 2.6, -0.45, 1.0, sit); });
+    // Standing, facing −z, one arm raised to work on a wall
+    fpart(new THREE.SphereGeometry(0.35, 16, 12), 0, 4.35, 0, 0, stand);
+    fpart(new THREE.CylinderGeometry(0.38, 0.44, 1.7, 12), 0, 3.05, 0, 0, stand);
+    [-0.2, 0.2].forEach(x => fpart(limb(0.15, 2.2), x, 1.1, 0, 0, stand));
+    fpart(limb(0.11, 1.4), 0.5, 4.1, -0.45, -0.95, stand);
+    fpart(limb(0.11, 1.3), -0.5, 3.1, 0, 0.15, stand);
+    g.scale.setScalar(scale || 1);
+    g.userData = { sit, stand, out:false }; g.visible = false;
+    return g;
+  }
+  const figs = Array.from({ length:12 }, () => makeFigure(1));
+  const teacherFig = makeFigure(1.15);
+  function updateFigVis(){
+    const on = document.getElementById('t-figs').checked;
+    [...figs, teacherFig].forEach(f => { f.visible = on && (!f.userData.out || siteGroup.visible); });
+  }
+  function placeFigures(Ly){
+    figs.forEach((f, i) => {
+      const e = Ly.figures ? Ly.figures[i] : { chair:i };
+      if (e.chair !== undefined) {
+        chairs[e.chair].add(f); f.position.set(0, 0, 0); f.rotation.set(0, 0, 0);
+        f.userData.out = false; f.userData.sit.visible = true; f.userData.stand.visible = false;
+      } else {
+        scene.add(f); f.position.set(e.stand.x, e.stand.y, e.stand.z); f.rotation.set(0, e.stand.rot, 0);
+        f.userData.out = !!e.out; f.userData.sit.visible = false; f.userData.stand.visible = true;
+      }
+    });
+    teacherChair.add(teacherFig); teacherFig.position.set(0, -0.22, 0); teacherFig.rotation.set(0, 0, 0);
+    teacherFig.userData.sit.visible = true; teacherFig.userData.stand.visible = false;
+    updateFigVis();
+  }
+  const desk = makeDesk();
+  const mobiles = [makeMobile(1, -14, 13, 0.1), makeMobile(2, -5, 17, -0.15), makeMobile(3, 5, 17, 0.15), makeMobile(4, 14, 13, -0.1)];
+
+  /* ---------- Brought in as needed: hanging dividers and rolling screens ---------- */
+  function makeDivider(x, z, rot){
+    const g = new THREE.Group();
+    const face = new THREE.MeshStandardMaterial({ color:0xf7f7f3, roughness:0.35 });
+    const rim = new THREE.MeshStandardMaterial({ color:0x9aa3a6, roughness:0.4, metalness:0.5 });
+    box(4, 5.5, 0.1, [rim, rim, rim, rim, face, face], 0, 3.95, 0, g);
+    [-1.7, 1.7].forEach(cx => cyl(0.015, Y - 6.7, metal, cx, (Y + 6.7)/2, 0, g));
+    g.position.set(x, 0, z); g.rotation.y = rot; g.visible = false;
+    g.userData = { draggable:true, name:'Room divider', sub:'4′ × 5′6″ · wipe board both sides', zone:'in' };
+    scene.add(g); draggables.push(g); return g;
+  }
+  const dividers = [makeDivider(-6.5, -0.2, Math.PI/2), makeDivider(12.6, -0.2, Math.PI/2)];
+  const screenMat = new THREE.MeshStandardMaterial({ map:projTex, emissive:0xffffff, emissiveMap:projTex, emissiveIntensity:0.75, roughness:0.4 });
+  function makeScreen(x, z, rot){
+    const g = new THREE.Group();
+    const frameM = new THREE.MeshStandardMaterial({ color:0x1d2120, roughness:0.4, metalness:0.4 });
+    box(2.4, 0.12, 1.6, frameM, 0, 0.3, 0, g);
+    [[-1, -0.6], [-1, 0.6], [1, -0.6], [1, 0.6]].forEach(([cx, cz]) => cyl(0.1, 0.08, frameM, cx, 0.12, cz, g, 0, Math.PI/2));
+    box(0.2, 4.4, 0.2, frameM, 0, 2.5, -0.1, g);
+    box(5.4, 3.1, 0.16, [frameM, frameM, frameM, frameM, screenMat, frameM], 0, 4.6, 0.05, g);
+    g.position.set(x, 0, z); g.rotation.y = rot; g.visible = false;
+    g.userData = { draggable:true, name:'Large rolling screen', sub:'75″ on casters', zone:'in' };
+    scene.add(g); draggables.push(g); return g;
+  }
+  const screens = [makeScreen(-17.2, 0, Math.PI/2), makeScreen(17.2, 0, -Math.PI/2)];
+
+  /* ---------- Pop-up museum: walk-in cubes with string-grid walls and ceiling ---------- */
+  const MUSEUM = 10;
+  function makeMuseum(cx, cz, seed){
+    const g = new THREE.Group(); g.position.set(cx, SLAB_Y, cz); siteGroup.add(g);
+    const s = MUSEUM, h = 10, hs = s/2, door = 1.6, doorH = 7;
+    const timber = new THREE.MeshStandardMaterial({ color:0x9b7b56, roughness:0.7 });
+    [[-hs, -hs], [-hs, hs], [hs, -hs], [hs, hs]].forEach(([x, z]) => box(0.3, h, 0.3, timber, x, h/2, z, g));
+    [-hs, hs].forEach(z => box(s + 0.3, 0.3, 0.3, timber, 0, h, z, g));
+    [-hs, hs].forEach(x => box(0.3, 0.3, s + 0.3, timber, x, h, 0, g));
+    box(s + 0.3, 0.3, 0.3, timber, 0, 0.15, hs, g);
+    [-hs, hs].forEach(x => box(0.3, 0.3, s + 0.3, timber, x, 0.15, 0, g));
+    [-door, door].forEach(x => box(0.2, doorH, 0.2, timber, x, doorH/2, -hs, g));
+    box(2*door + 0.2, 0.2, 0.2, timber, 0, doorH, -hs, g);
+    const P = [];
+    const seg = (a, b) => P.push(...a, ...b);
+    for (let y = 1; y < h; y += 1) {
+      seg([-hs, y, hs], [hs, y, hs]); seg([-hs, y, -hs], [-hs, y, hs]); seg([hs, y, -hs], [hs, y, hs]);
+      if (y < doorH) { seg([-hs, y, -hs], [-door, y, -hs]); seg([door, y, -hs], [hs, y, -hs]); } else seg([-hs, y, -hs], [hs, y, -hs]);
+    }
+    for (let u = -hs + 1; u < hs; u += 1) {
+      seg([u, 0.3, hs], [u, h, hs]); seg([-hs, 0.3, u], [-hs, h, u]); seg([hs, 0.3, u], [hs, h, u]);
+      if (Math.abs(u) < door) seg([u, doorH, -hs], [u, h, -hs]); else seg([u, 0.3, -hs], [u, h, -hs]);
+      seg([u, h - 0.1, -hs], [u, h - 0.1, hs]); seg([-hs, h - 0.1, u], [hs, h - 0.1, u]);
+    }
+    const r = seeded(seed), cards = [];
+    const walls4 = [
+      { at:(u, y) => [u, y, hs - 0.06], rot:Math.PI, skip:() => false },
+      { at:(u, y) => [-hs + 0.06, y, u], rot:Math.PI/2, skip:() => false },
+      { at:(u, y) => [hs - 0.06, y, u], rot:-Math.PI/2, skip:() => false },
+      { at:(u, y) => [u, y, -hs + 0.06], rot:0, skip:(u, y) => Math.abs(u) < door + 0.6 && y < doorH + 0.5 }
+    ];
+    walls4.forEach(wl => {
+      for (let k = 0; k < 26; k++) {
+        const u = -hs + 1 + Math.floor(r()*(s - 1)) - 0.5 + 0.5, row = 2 + Math.floor(r()*7);
+        const y = row - 0.55;
+        if (wl.skip(u, y)) continue;
+        const [x, yy, z] = wl.at(u + (r() - 0.5)*0.3, y);
+        cards.push({ x, y:yy, z, ry:wl.rot, rz:(r() - 0.5)*0.12, c:Math.floor(r()*6) });
+      }
+    });
+    for (let k = 0; k < 14; k++) {
+      const x = -hs + 1.5 + r()*(s - 3), z = -hs + 1.5 + r()*(s - 3), drop = 1.5 + r()*2.5;
+      seg([x, h - 0.1, z], [x, h - drop, z]);
+      cards.push({ x, y:h - drop - 0.5, z, ry:r()*Math.PI, rz:0, c:Math.floor(r()*6) });
+    }
+    const geo = new THREE.BufferGeometry(); geo.setAttribute('position', new THREE.Float32BufferAttribute(P, 3));
+    g.add(new THREE.LineSegments(geo, new THREE.LineBasicMaterial({ color:0xd8ccb0 })));
+    const palette = [0xf7f4ea, 0xf2d24b, 0xc9a874, 0x9cc38a, 0xf4b6a6, 0xbcd4e6].map(c => new THREE.Color(c));
+    const cardMesh = new THREE.InstancedMesh(new THREE.PlaneGeometry(0.75, 0.95), new THREE.MeshStandardMaterial({ color:0xffffff, roughness:0.85, side:THREE.DoubleSide }), cards.length);
+    const clipMesh = new THREE.InstancedMesh(new THREE.BoxGeometry(0.14, 0.1, 0.05), new THREE.MeshStandardMaterial({ color:0x6b4a2f, roughness:0.6 }), cards.length);
+    const o = new THREE.Object3D();
+    cards.forEach((cd, i) => {
+      o.position.set(cd.x, cd.y, cd.z); o.rotation.set(0, cd.ry, cd.rz); o.updateMatrix();
+      cardMesh.setMatrixAt(i, o.matrix); cardMesh.setColorAt(i, palette[cd.c]);
+      o.position.y = cd.y + 0.47; o.updateMatrix(); clipMesh.setMatrixAt(i, o.matrix);
+    });
+    cardMesh.castShadow = true; g.add(cardMesh); g.add(clipMesh);
+    return g;
+  }
+  const museums = [makeMuseum(-9.5, 31, 11), makeMuseum(9.5, 31, 29)];
+
+  /* ---------- Lesson setups: only what the lesson needs goes on the tables ---------- */
+  const TOP_Y = 2.45;
+  const SEATS = [
+    { x:0, z:TD/2 - 0.5, a:0 },
+    { x:1.875 - 0.866*0.55, z:-0.5*0.55, a:Math.PI/3 },
+    { x:-1.875 + 0.866*0.55, z:-0.5*0.55, a:-Math.PI/3 }
+  ];
+  const IM = {
+    white:  new THREE.MeshStandardMaterial({ color:0xf7f7f2, roughness:0.35 }),
+    paper:  new THREE.MeshStandardMaterial({ color:0xf3efe2, roughness:0.9 }),
+    lined:  new THREE.MeshStandardMaterial({ color:0xe9eef6, roughness:0.9 }),
+    sticky: new THREE.MeshStandardMaterial({ color:0xf2d24b, roughness:0.8 }),
+    blue:   new THREE.MeshStandardMaterial({ color:0x1f4e8c, roughness:0.5 }),
+    dark:   new THREE.MeshStandardMaterial({ color:0x262b2a, roughness:0.45, metalness:0.3 }),
+    screen: new THREE.MeshStandardMaterial({ color:0x2e4a5a, emissive:0x1a3a4a, roughness:0.2 }),
+    led:    new THREE.MeshBasicMaterial({ color:0x39d98a }),
+    lamp:   new THREE.MeshBasicMaterial({ color:0xfff4cf })
+  };
+  function ibox(w, h, d, mat, x, y, z, parent){ const m = box(w, h, d, mat, x, y, z, parent); m.userData.noGlow = true; return m; }
+  function icyl(r, len, mat, x, y, z, rotZ, parent){ const m = cyl(r, len, mat, x, y, z, parent, 0, rotZ); m.userData.noGlow = true; return m; }
+  function seatItem(kind){
+    const g = new THREE.Group();
+    if (kind === 'board') { ibox(1.2, 0.03, 0.85, IM.white, 0, 0.015, 0, g); icyl(0.035, 0.45, IM.blue, 0.75, 0.04, 0.1, Math.PI/2, g); }
+    if (kind === 'sketch') { ibox(1.0, 0.04, 1.3, IM.paper, -0.1, 0.02, 0, g); ibox(0.26, 0.06, 0.26, IM.sticky, 0.6, 0.03, -0.35, g); icyl(0.025, 0.55, IM.dark, 0.62, 0.03, 0.25, Math.PI/2, g); }
+    if (kind === 'notebook') { ibox(0.8, 0.04, 1.05, IM.lined, 0, 0.02, 0, g); icyl(0.025, 0.5, IM.blue, 0.55, 0.03, 0.1, Math.PI/2, g); }
+    return g;
+  }
+  function centerItem(kind){
+    const g = new THREE.Group();
+    if (kind === 'mic') {
+      icyl(0.26, 0.08, IM.dark, 0, 0.04, 0, 0, g);
+      const ring = new THREE.Mesh(new THREE.TorusGeometry(0.2, 0.018, 8, 32), IM.led);
+      ring.rotation.x = Math.PI/2; ring.position.y = 0.085; ring.userData.noGlow = true; g.add(ring);
+    }
+    if (kind === 'tablet') {
+      const t = new THREE.Mesh(new THREE.BoxGeometry(0.75, 0.03, 1.05), [IM.dark, IM.dark, IM.screen, IM.dark, IM.dark, IM.dark]);
+      t.position.y = 0.015; t.castShadow = true; t.userData.noGlow = true; g.add(t);
+    }
+    return g;
+  }
+  const docCam = new THREE.Group();
+  ibox(0.6, 0.06, 0.45, IM.dark, 0, 0.03, 0, docCam);
+  icyl(0.035, 1.1, IM.dark, 0, 0.6, -0.15, 0, docCam);
+  ibox(0.42, 0.1, 0.22, IM.dark, 0, 1.15, 0.0, docCam);
+  ibox(0.2, 0.02, 0.12, IM.lamp, 0, 1.095, 0.02, docCam);
+  ibox(0.9, 0.02, 1.2, IM.paper, -0.05, 0.01, 0.55, docCam);
+  docCam.position.set(-0.55, 2.5, -0.3); desk.add(docCam);
+
+  const PRESETS = {
+    clear:   { label:'Clear', desc:'Nothing on the tables. The room waits for the lesson.', items:'nothing', seat:null, center:null, doc:false },
+    respond: { label:'Respond to the screen', desc:'Students work with content on the screen and answer on a mini whiteboard. That is all they need.', items:'1 mini whiteboard + marker per student', seat:'board', center:null, doc:false },
+    sketch:  { label:'Sketch, project, annotate', desc:'A sketch or sticky note goes under the document camera, is projected large, and is annotated as the class discusses it.', items:'sketchpad, sticky notes, pencil per student · document camera on the desk', seat:'sketch', center:null, doc:true },
+    discuss: { label:'Record the discussion', desc:'One microphone per table records the talk. The transcript goes on the wall to revisit, quote and assess.', items:'1 table microphone per group', seat:null, center:'mic', doc:false },
+    capture: { label:'Capture and transcribe', desc:'A notebook page or whiteboard is photographed and transcribed on the spot, so handwritten thinking becomes searchable text.', items:'notebook per student · 1 tablet per table', seat:'notebook', center:'tablet', doc:false }
+  };
+  function setPreset(key){
+    const p = PRESETS[key];
+    tables.forEach(t => {
+      const g = t.userData.items;
+      while (g.children.length) g.remove(g.children[0]);
+      if (p.seat) SEATS.forEach(s => { const it = seatItem(p.seat); it.position.set(s.x, TOP_Y, s.z); it.rotation.y = s.a; g.add(it); });
+      if (p.center) { const it = centerItem(p.center); it.position.set(0, TOP_Y, 0.05); g.add(it); }
+    });
+    docCam.visible = p.doc;
+    projMode = key; projTex.userData.redraw();
+    pressGroup('#setups', key);
+    document.getElementById('setup-desc').textContent = p.desc;
+    document.getElementById('setup-items').textContent = p.items;
+  }
+
+  /* ---------- Formations ---------- */
+  const SLOTS = [{ x:0, z:TD/2 + 0.75, r:0 }, { x:2.52, z:0.375, r:Math.PI/3 }, { x:-2.52, z:0.375, r:-Math.PI/3 }];
+  const DESK_SEAT = { x:0, z:-1.95, r:Math.PI };
+  const tableZ = Z0 + T + 0.55 + TD/2 + 0.9;
+  const atWall = {
+    back:  x => ({ x, z:ZB + TD/2 + 0.05, rot:0 }),
+    front: x => ({ x, z:ZF - TD/2 - 0.05, rot:Math.PI }),
+    left:  z => ({ x:X0 + T + TD/2 + 0.05, z, rot:Math.PI/2 }),
+    right: z => ({ x:X1 - T - TD/2 - 0.05, z, rot:-Math.PI/2 })
+  };
+  const deskHome = { x:projCx, z:ZF - SPEC.desk/2 - 0.05, rot:0 };
+  const deskSide = { x:16, z:ZF - SPEC.desk/2 - 0.05, rot:0 };
+  const FOCI = {
+    proj:  { label:'Projection wall', c:[projCx, ZB], N:[0, 1], U:[1, 0], a:6.2, b:5.6, proj:'wall',
+             tables:[atWall.back(-15.5), atWall.back(-9.5), atWall.front(-10.5), atWall.right(0)], side:deskSide },
+    wb:    { label:'Whiteboard', c:[0, ZB], N:[0, 1], U:[1, 0], a:6.2, b:5.6, proj:'none',
+             tables:[atWall.back(-15.5), atWall.back(-10), atWall.back(12.5), atWall.right(0)], side:deskSide },
+    left:  { label:'Side-door end wall', c:[X0 + T, 0], N:[1, 0], U:[0, 1], a:3.0, b:7.5, proj:'left',
+             tables:[atWall.back(-7.5), atWall.front(-7.5), atWall.back(14.5), atWall.right(0)], side:deskHome },
+    right: { label:'Locker end wall', c:[X1 - T, 0], N:[-1, 0], U:[0, 1], a:3.0, b:7.5, proj:'right',
+             tables:[atWall.back(-15), atWall.back(-9), atWall.front(-11), atWall.back(6.5)], side:deskHome }
+  };
+  const FORMS = {
+    groups:   { label:'Groups', desc:'Four trapezoid tables, three students each. The starting layout.' },
+    two:      { label:'Two groups', desc:'Two hexagonal tables, each made from two trapezoids, with six students around each.' },
+    whole:    { label:'Whole group', desc:'All four tables join into one long table for the whole class, with the teacher at the end.' },
+    campfire: { label:'Campfire', desc:'Chairs form a half moon facing one wall and the tables move to the sides. Any wall can be the campfire: the projection wall, the whiteboard, or either end wall with a ceiling projector.' },
+    water:    { label:'Water holes', desc:'Each table works on its own, facing any direction or pushed against a wall.' },
+    caves:    { label:'Caves', desc:'Students work alone and spread out: some at tables against the walls, some standing at the wall boards, some in front of the projection, and one at the outside chalkboard. Turns on the whole site.' }
+  };
+  const DESKMODES = { under:'Under the campfire wall', side:'To the side (teacher joins the circle)' };
+  const state = { form:'groups', focus:'proj', desk:'under', pmode:'standard' };
+
+  function arcSeats(F, n){
+    const th0 = 0.22, th1 = Math.PI - 0.22, S = 400;
+    const P = t => [F.c[0] + F.U[0]*F.a*Math.cos(t) + F.N[0]*F.b*Math.sin(t), F.c[1] + F.U[1]*F.a*Math.cos(t) + F.N[1]*F.b*Math.sin(t)];
+    const samples = [P(th0)], acc = [0];
+    for (let i = 1; i <= S; i++) { const p = P(th0 + (th1 - th0)*i/S), q = samples[i - 1]; samples.push(p); acc.push(acc[i - 1] + Math.hypot(p[0] - q[0], p[1] - q[1])); }
+    const out = [];
+    for (let k = 0; k < n; k++) {
+      const target = acc[S]*k/(n - 1); let i = acc.findIndex(v => v >= target); if (i < 0) i = S;
+      const p = samples[i], fx = F.c[0] - p[0], fz = F.c[1] - p[1], len = Math.hypot(fx, fz) || 1;
+      out.push({ x:p[0], y:0, z:p[1], rot:facing(fx/len, fz/len) });
+    }
+    return out;
+  }
+  function layout(){
+    if (state.form === 'groups') return { tables:[-15, -8.6, -2.2, 15.4].map(x => ({ x, z:tableZ, rot:0 })), desk:deskHome, teacher:'desk', chairs:'attach' };
+    if (state.form === 'water') return { tables:[atWall.left(0), { x:-9.5, z:0.2, rot:0.5 }, atWall.back(-1.5), atWall.front(15.5)], desk:deskHome, teacher:'desk', chairs:'attach' };
+    const hh = TD/2;
+    if (state.form === 'two') return { tables:[{ x:-9, z:hh, rot:0 }, { x:-9, z:-hh, rot:Math.PI }, { x:14, z:hh, rot:0 }, { x:14, z:-hh, rot:Math.PI }], desk:deskHome, teacher:'desk', chairs:'attach' };
+    if (state.form === 'whole') {
+      const cx = -7, xs = [-5.625, -1.875, 1.875, 5.625], cs = [-6, -3.6, -1.2, 1.2, 3.6, 6];
+      return { tables:xs.map((d, i) => ({ x:cx + d, z:0, rot:i % 2 ? Math.PI : 0 })), desk:deskHome,
+        teacher:{ x:cx - 8.125 - 1.0, y:0, z:0, rot:-Math.PI/2 },
+        chairs:[...cs.map(d => ({ x:cx + d, y:0, z:hh + 0.75, rot:0 })), ...cs.map(d => ({ x:cx + d, y:0, z:-hh - 0.75, rot:Math.PI }))] };
+    }
+    if (state.form === 'caves') {
+      const stand = (x, z, rot, out) => ({ stand:{ x, y:out ? SLAB_Y : 0, z, rot }, out:!!out });
+      const chairsL = [
+        { t:0, s:0 }, { t:0, s:1 }, { x:6.4, y:0, z:0.05, rot:0 },
+        { t:1, s:0 }, { t:1, s:1 }, { t:1, s:2 },
+        { t:2, s:0 }, { t:2, s:1 }, { t:2, s:2 },
+        { t:3, s:0 }, { x:8.6, y:0, z:0.4, rot:0 }, { x:10.8, y:0, z:0.05, rot:0 }
+      ];
+      const figures = [
+        { chair:0 }, stand(-12.55, ZF - 1.0, Math.PI), { chair:2 },
+        { chair:3 }, stand(-9.15, ZF - 1.0, Math.PI), stand(-5.75, ZF - 1.0, Math.PI),
+        { chair:6 }, stand(X1 - T - 1.0, 0, -Math.PI/2), stand((SPEC.chalk.x0 + SPEC.chalk.x1)/2, Z1 + 1.3, 0, true),
+        { chair:9 }, { chair:10 }, { chair:11 }
+      ];
+      return { tables:[atWall.back(-15), atWall.back(-9), atWall.back(15.8), atWall.left(0)], desk:deskHome, teacher:'desk', chairs:chairsL, figures };
+    }
+    const F = FOCI[state.focus], under = state.desk === 'under';
+    const d = under ? { x:F.c[0] + F.N[0]*3.0, z:F.c[1] + F.N[1]*3.0, rot:Math.atan2(F.N[0], F.N[1]) } : F.side;
+    const seats = arcSeats(F, under ? 12 : 13);
+    return { tables:F.tables, desk:d, teacher: under ? 'desk' : seats[0], chairs: under ? seats : seats.slice(1) };
+  }
+
+  let moveTween = null;
+  const wp = new THREE.Vector3();
+  function detach(c){
+    if (c.parent === scene) return;
+    c.parent.updateMatrixWorld(true);
+    c.getWorldPosition(wp);
+    const r = c.parent.rotation.y + c.rotation.y;
+    scene.add(c); c.position.copy(wp); c.rotation.set(0, r, 0);
+  }
+  function applyLayout(animate){
+    select(null);
+    const Ly = layout(), moves = [];
+    const add = (obj, to) => moves.push({ obj, p0:obj.position.clone(), r0:obj.rotation.y, p1:new THREE.Vector3(to.x, to.y !== undefined ? to.y : 0, to.z), r1:to.rot });
+    tables.forEach((t, i) => add(t, Ly.tables[i]));
+    add(desk, Ly.desk);
+    [...chairs, teacherChair].forEach(detach);
+    placeFigures(Ly);
+    chairs.forEach((c, idx) => {
+      const e = Ly.chairs === 'attach' ? { t:Math.floor(idx/3), s:idx % 3 } : Ly.chairs[idx];
+      let to;
+      if (e.t !== undefined) {
+        const t = Ly.tables[e.t], s = SLOTS[e.s], o = rotXZ(s.x, s.z, t.rot);
+        to = { x:t.x + o.x, y:0, z:t.z + o.z, rot:t.rot + s.r, attach:tables[e.t], local:s };
+      } else to = e;
+      c.userData.next = to; c.userData.draggable = false; add(c, to);
+    });
+    let tt;
+    if (Ly.teacher === 'desk') { const o = rotXZ(DESK_SEAT.x, DESK_SEAT.z, Ly.desk.rot); tt = { x:Ly.desk.x + o.x, y:0, z:Ly.desk.z + o.z, rot:Ly.desk.rot + DESK_SEAT.r, attach:desk, local:DESK_SEAT }; }
+    else tt = Ly.teacher;
+    teacherChair.userData.next = tt; teacherChair.userData.draggable = false; add(teacherChair, tt);
+    moves.forEach(m => { const dr = Math.atan2(Math.sin(m.r1 - m.r0), Math.cos(m.r1 - m.r0)); m.r1 = m.r0 + dr; });
+    if (!animate || reduceMotion.matches) { moves.forEach(m => { m.obj.position.copy(m.p1); m.obj.rotation.y = m.r1; }); finishLayout(); }
+    else moveTween = { moves, start:performance.now(), dur:900 };
+    applyProjection();
+  }
+  function finishLayout(){
+    moveTween = null;
+    [...chairs, teacherChair].forEach(c => {
+      const n = c.userData.next;
+      if (n && n.attach) { n.attach.add(c); c.position.set(n.local.x, 0, n.local.z); c.rotation.set(0, n.local.r, 0); c.userData.draggable = false; }
+      else { c.userData.draggable = true; c.userData.zone = (n && n.zone) || 'in'; }
+    });
+  }
+  function setForm(key){
+    state.form = key; pressGroup('#forms', key);
+    if (key === 'caves' && !siteGroup.visible) setSite(true);
+    document.getElementById('form-desc').textContent = FORMS[key].desc;
+    document.getElementById('camp-opts').hidden = key !== 'campfire';
+    applyLayout(true);
+  }
+
+  /* ---------- Projection follows the campfire ---------- */
+  const tProj = document.getElementById('t-proj');
+  function applyProjection(){
+    const target = state.form === 'campfire' ? FOCI[state.focus].proj : 'wall', on = tProj.checked;
+    projSurface.material[4] = on && target === 'wall' ? projOn : projOff;
+    beam.visible = on && target === 'wall';
+    ['left', 'right'].forEach(s => { const v = on && target === s && ceil.visible; endPlanes[s].visible = v; endBeams[s].visible = v; });
+    if (state.pmode === 'room') { beam.visible = false; endBeams.left.visible = false; endBeams.right.visible = false; }
+  }
+
+  /* ---------- Labels ---------- */
+  const labelsEl = document.getElementById('labels');
+  const labels = [];
+  function addLabel(text, sub, getPos, ref, show){
+    const el = document.createElement('div'); el.className = 'lbl';
+    el.innerHTML = `${text}${sub ? `<b>${sub}</b>` : ''}`;
+    labelsEl.appendChild(el); labels.push({ el, getPos, ref, show });
+  }
+  const fixed = v => () => v;
+  const throwDist = lensZ - zs, imgW = SPEC.proj.x1 - SPEC.proj.x0, throwRatio = (throwDist / imgW).toFixed(2);
+  addLabel('Sliding glass doors', fmt(SPEC.sliding.x1 - SPEC.sliding.x0), fixed(new THREE.Vector3(0, SPEC.sliding.y1 + 0.5, Z1)));
+  addLabel('Side door', fmt(SPEC.sideDoor.x1 - SPEC.sideDoor.x0), fixed(new THREE.Vector3((SPEC.sideDoor.x0 + SPEC.sideDoor.x1)/2, SPEC.sideDoor.y1 + 0.5, Z1 + 0.2)));
+  addLabel('Whiteboard', fmt(SPEC.board.x1 - SPEC.board.x0), fixed(new THREE.Vector3(0, SPEC.board.y1 + 0.55, ZB)));
+  addLabel('Projection wall', fmt(imgW), fixed(new THREE.Vector3(projCx, SPEC.proj.y1 + 0.55, ZB)));
+  addLabel('Short-throw projector', throwRatio + ' : 1', fixed(new THREE.Vector3(projCx, SPEC.shelfY + 0.9, shelfZ)));
+  addLabel('Hanging wipe boards', '1′6″ × 1′ landscape', fixed(new THREE.Vector3(X0 + T + 0.1, 8.0, 0)));
+  addLabel('Ceiling tech grid', 'drop points', fixed(new THREE.Vector3(-4, Y + 0.2, -2.6)));
+  addLabel('Chalkboard', 'outside', fixed(new THREE.Vector3((SPEC.chalk.x0 + SPEC.chalk.x1)/2, SPEC.chalk.y1 + 0.6, Z1 + 0.3)), null, siteShown);
+  addLabel('Weatherproof lockers', `${SPEC.lockers.n} × ${fmt(SPEC.lockers.w)}`, fixed(new THREE.Vector3(SPEC.lockers.x0 + SPEC.lockers.n*SPEC.lockers.w/2, SPEC.lockers.h + 0.2, Z1 + 1.2)), null, siteShown);
+  addLabel('Covered area', `${fmt(C.x1 - C.x0)} × ${fmt(C.z1 - C.z0)}`, fixed(new THREE.Vector3(0, 0.6, C.z0 + 40)), null, siteShown);
+  const tmpV = new THREE.Vector3();
+  [...tables, desk, ...mobiles].forEach(d => addLabel(d.userData.name, d.userData.sub, () => tmpV.copy(d.position).setY(d.position.y + 3.3), d));
+  [...dividers, ...screens].forEach(d => addLabel(d.userData.name, d.userData.sub, () => tmpV.copy(d.position).setY(7.0), d));
+  museums.forEach((m, i) => addLabel(`Pop-up museum ${'AB'[i]}`, 'string-grid walls', fixed(new THREE.Vector3(m.position.x, 10.2, m.position.z)), null, siteShown));
+  addLabel('Ceiling mics', 'directional', fixed(new THREE.Vector3(14, Y - 1.2, 0.9)), ceil);
+  addLabel('Pull-down power', '6 drops', fixed(new THREE.Vector3(-10, Y - 0.6, -1.3)), ceil);
+  addLabel('Starlink', 'satellite uplink', fixed(new THREE.Vector3(16.5, H + 1.6, Z0 + 0.6)));
+  addLabel('Wipe board wall', `${fmt(bigBoard.x1 - bigBoard.x0)} × ${fmt(bigBoard.y1 - bigBoard.y0)}`, fixed(new THREE.Vector3(5.6, 6.4, ZF)));
+  pullScreens.forEach(sc => addLabel(sc.label, 'floor to ceiling', fixed(new THREE.Vector3((sc.x0 + sc.x1)/2, 2.2, sc.z + 0.1)), null, () => sc.cur > 0.6));
+
+  /* ---------- Pointer: pick, drag, orbit ---------- */
+  const ray = new THREE.Raycaster(), ndc = new THREE.Vector2();
+  const dragPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
+  let drag = null, downAt = null, selected = null;
+  function setNdc(e){ const r = canvas.getBoundingClientRect(); ndc.set(((e.clientX - r.left)/r.width)*2 - 1, -((e.clientY - r.top)/r.height)*2 + 1); }
+  function pick(e){
+    if (moveTween) return null;
+    setNdc(e); ray.setFromCamera(ndc, camera);
+    const hits = ray.intersectObjects(draggables, true);
+    for (const h of hits) { if (!shown(h.object)) continue; let o = h.object; while (o && !o.userData.draggable) o = o.parent; if (o) return o; }
+    return null;
+  }
+  // Registered before OrbitControls so a furniture grab can switch orbiting off first
+  canvas.addEventListener('pointerdown', e => {
+    if (e.button !== 0) return;
+    downAt = { x:e.clientX, y:e.clientY };
+    const obj = pick(e);
+    if (obj) {
+      select(obj);
+      dragPlane.constant = -obj.position.y;
+      const p = new THREE.Vector3();
+      if (ray.ray.intersectPlane(dragPlane, p)) {
+        drag = { obj, ox:p.x - obj.position.x, oz:p.z - obj.position.z };
+        controls.enabled = false; canvas.setPointerCapture(e.pointerId); canvas.style.cursor = 'grabbing';
+      }
+    }
+  });
+  canvas.addEventListener('pointermove', e => {
+    if (drag) {
+      setNdc(e); ray.setFromCamera(ndc, camera);
+      const p = new THREE.Vector3();
+      if (ray.ray.intersectPlane(dragPlane, p)) { drag.obj.position.x = p.x - drag.ox; drag.obj.position.z = p.z - drag.oz; clampObj(drag.obj); updateSelCard(); }
+    } else if (e.pointerType === 'mouse' && !e.buttons) {
+      canvas.style.cursor = pick(e) ? 'pointer' : 'grab';
+    }
+  });
+  function endDrag(e){
+    if (drag) { drag = null; controls.enabled = true; canvas.style.cursor = 'grab'; try { canvas.releasePointerCapture(e.pointerId); } catch (_) {} }
+    else if (downAt && Math.hypot(e.clientX - downAt.x, e.clientY - downAt.y) < 4 && !pick(e)) select(null);
+    downAt = null;
+  }
+  canvas.addEventListener('pointerup', endDrag);
+  canvas.addEventListener('pointercancel', endDrag);
+
+  const controls = new THREE.OrbitControls(camera, canvas);
+  controls.enableDamping = true; controls.dampingFactor = 0.08;
+  controls.minDistance = 0.4; controls.maxDistance = 260;
+  controls.maxPolarAngle = Math.PI * 0.495;
+  controls.target.set(0, 2.5, 0); controls.update();
+
+  const bbox = new THREE.Box3();
+  function clampObj(obj){
+    obj.updateMatrixWorld(true); bbox.setFromObject(obj);
+    const out = obj.userData.zone === 'out', m = 0.05;
+    const minX = out ? C.x0 + 0.3 : X0 + T + m, maxX = out ? C.x1 - 0.3 : X1 - T - m;
+    const minZ = out ? C.z0 + 0.3 : Z0 + T + m, maxZ = out ? C.z1 - 0.3 : Z1 - T - m;
+    let dx = 0, dz = 0;
+    if (bbox.max.x - bbox.min.x > maxX - minX) dx = (minX + maxX)/2 - (bbox.min.x + bbox.max.x)/2;
+    else if (bbox.min.x < minX) dx = minX - bbox.min.x; else if (bbox.max.x > maxX) dx = maxX - bbox.max.x;
+    if (bbox.max.z - bbox.min.z > maxZ - minZ) dz = (minZ + maxZ)/2 - (bbox.min.z + bbox.max.z)/2;
+    else if (bbox.min.z < minZ) dz = minZ - bbox.min.z; else if (bbox.max.z > maxZ) dz = maxZ - bbox.max.z;
+    obj.position.x += dx; obj.position.z += dz;
+  }
+
+  /* ---------- Selection ---------- */
+  const selWrap = document.getElementById('sel-wrap');
+  function setGlow(obj, on){
+    obj.traverse(o => {
+      if (!o.isMesh || o.userData.noGlow) return;
+      if (o.parent && o.parent !== obj && o.parent.userData.draggable === false && o.parent.userData.name && o.parent !== obj) return;
+      (Array.isArray(o.material) ? o.material : [o.material]).forEach(m => { if (m.emissive) m.emissive.setHex(on ? 0x4a3300 : 0x000000); });
+    });
+  }
+  function select(obj){
+    if (selected === obj) return;
+    if (selected) setGlow(selected, false);
+    selected = obj;
+    if (selected) setGlow(selected, true);
+    labels.forEach(l => l.el.classList.toggle('sel', !!l.ref && l.ref === selected));
+    selWrap.hidden = !selected;
+    updateSelCard();
+  }
+  function updateSelCard(){
+    if (!selected) return;
+    const u = selected.userData;
+    document.getElementById('sel-name').textContent = u.sub ? `${u.name} · ${u.sub}` : u.name;
+    const deg = Math.round(((selected.rotation.y * 180/Math.PI) % 360 + 360) % 360);
+    document.getElementById('sel-pos').textContent = u.zone === 'out'
+      ? `Outside · ${fmt(Math.max(0, selected.position.z - Z1))} out from the door wall · ${deg}°`
+      : `${fmt(selected.position.x - X0)} from the side-door end · ${fmt(Z1 - selected.position.z)} from the door wall · ${deg}°`;
+  }
+  function rotateSel(deg){ if (!selected) return; selected.rotation.y += deg*Math.PI/180; clampObj(selected); updateSelCard(); }
+  document.getElementById('rot-l').addEventListener('click', () => rotateSel(-30));
+  document.getElementById('rot-r').addEventListener('click', () => rotateSel(30));
+  document.getElementById('desel').addEventListener('click', () => select(null));
+  document.getElementById('reset').addEventListener('click', () => {
+    mobiles.forEach(m => { const h = m.userData.home; m.position.set(h.x, SLAB_Y, h.z); m.rotation.y = h.rot; });
+    applyLayout(true);
+  });
+  document.addEventListener('keydown', e => {
+    if (!selected || e.metaKey || e.ctrlKey || e.altKey) return;
+    const tag = (e.target.tagName || '').toLowerCase();
+    if (tag === 'input' || tag === 'textarea') return;
+    const step = 0.5; let used = true;
+    if (e.key === 'ArrowLeft') selected.position.x -= step;
+    else if (e.key === 'ArrowRight') selected.position.x += step;
+    else if (e.key === 'ArrowUp') selected.position.z -= step;
+    else if (e.key === 'ArrowDown') selected.position.z += step;
+    else if (e.key === 'r' || e.key === 'R') selected.rotation.y += (e.shiftKey ? -30 : 30)*Math.PI/180;
+    else if (e.key === 'Escape') select(null);
+    else used = false;
+    if (used) { e.preventDefault(); if (selected) { clampObj(selected); updateSelCard(); } }
+  });
+
+  /* ---------- Views ---------- */
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  let tween = null;
+  const FOV_OUT = 48, FOV_IN = 74, insideViews = new Set(['doorway', 'student', 'teacher']);
+  function eyeLook(pos, at){
+    const dir = at.clone().sub(pos).normalize();
+    return [pos, pos.clone().add(dir.multiplyScalar(1.2)).add(new THREE.Vector3(0, -0.15, 0))];
+  }
+  function focusPoint(y){
+    if (state.form !== 'campfire') return new THREE.Vector3(0, y, ZB);
+    const F = FOCI[state.focus]; return new THREE.Vector3(F.c[0], y, F.c[1]);
+  }
+  const views = {
+    overview: () => [new THREE.Vector3(-22, 21, -30), new THREE.Vector3(0, 2.5, 0)],
+    plan:     () => [new THREE.Vector3(0, 54, 0.01), new THREE.Vector3(0, 0, 0)],
+    doorway:  () => eyeLook(new THREE.Vector3(0, 5.3, ZF - 0.5), new THREE.Vector3(0, 4.6, ZB)),
+    student:  () => { const c = chairs[3].getWorldPosition(new THREE.Vector3()); return eyeLook(c.setY(c.y + 3.9), focusPoint(4.8)); },
+    teacher:  () => {
+      const c = teacherChair.getWorldPosition(new THREE.Vector3()).setY(5.1);
+      const at = state.form === 'campfire' && state.desk === 'side' ? focusPoint(4.5) : new THREE.Vector3(c.x < 0 ? 12 : -10, 3.4, 0);
+      return eyeLook(c, at);
+    },
+    outside:  () => [new THREE.Vector3(-12, 7, 30), new THREE.Vector3(-2, 3.5, 4)],
+    covered:  () => [new THREE.Vector3(38, 34, 60), new THREE.Vector3(0, 0, 20)]
+  };
+  function goTo(name){
+    if ((name === 'outside' || name === 'covered') && !siteGroup.visible) setSite(true);
+    const [p, t] = views[name]();
+    pressGroup('.views', name, 'view');
+    const fov = insideViews.has(name) ? FOV_IN : FOV_OUT;
+    if (reduceMotion.matches) { camera.position.copy(p); controls.target.copy(t); camera.fov = fov; camera.updateProjectionMatrix(); controls.update(); return; }
+    tween = { p0:camera.position.clone(), t0:controls.target.clone(), p1:p, t1:t, f0:camera.fov, f1:fov, start:performance.now(), dur:850 };
+  }
+  document.querySelectorAll('.views .btn').forEach(b => b.addEventListener('click', () => goTo(b.dataset.view)));
+
+  /* ---------- Rail controls ---------- */
+  function pressGroup(sel, key, attr){
+    const a = attr || 'key';
+    document.querySelectorAll(`${sel} .btn`).forEach(b => b.setAttribute('aria-pressed', String(b.dataset[a] === key)));
+  }
+  function buttons(sel, entries, onClick){
+    const el = document.querySelector(sel);
+    el.innerHTML = entries.map(([k, label]) => `<button class="btn" type="button" data-key="${k}" aria-pressed="false">${label}</button>`).join('');
+    el.querySelectorAll('.btn').forEach(b => b.addEventListener('click', () => onClick(b.dataset.key)));
+  }
+  buttons('#forms', Object.entries(FORMS).map(([k, f]) => [k, f.label]), setForm);
+  buttons('#foci', Object.entries(FOCI).map(([k, f]) => [k, f.label]), k => { state.focus = k; pressGroup('#foci', k); applyLayout(true); });
+  buttons('#deskmodes', Object.entries(DESKMODES), k => { state.desk = k; pressGroup('#deskmodes', k); applyLayout(true); });
+  buttons('#setups', Object.entries(PRESETS).map(([k, p]) => [k, p.label]), setPreset);
+  function setPMode(k){ state.pmode = k; pressGroup('#pmodes', k); document.getElementById('pmode-desc').textContent = PMODES[k].desc; applyProjMode(); }
+  buttons('#pmodes', Object.entries(PMODES).map(([k, p]) => [k, p.label]), setPMode);
+  pressGroup('#foci', state.focus); pressGroup('#deskmodes', state.desk);
+
+  const tCut = document.getElementById('t-cut'), tCanopy = document.getElementById('t-canopy');
+  document.getElementById('t-roof').addEventListener('change', e => { roof.visible = e.target.checked; });
+  canopy.visible = tCanopy.checked;
+  tCanopy.addEventListener('change', e => { canopy.visible = e.target.checked; });
+  document.getElementById('t-boards').addEventListener('change', e => boardGroups.forEach(g => { g.visible = e.target.checked; }));
+  document.getElementById('t-ceil').addEventListener('change', e => { ceil.visible = e.target.checked; applyProjection(); });
+  document.getElementById('t-labels').addEventListener('change', e => { labelsEl.hidden = !e.target.checked; });
+  document.getElementById('t-grid').addEventListener('change', e => { grid.visible = e.target.checked; });
+  tProj.addEventListener('change', applyProjMode);
+  const tSite = document.getElementById('t-site');
+  function setSite(on){ tSite.checked = on; siteGroup.visible = on; tCanopy.disabled = !on; updateFigVis(); }
+  document.getElementById('t-figs').addEventListener('change', updateFigVis);
+  tSite.addEventListener('change', e => setSite(e.target.checked));
+  setSite(false);
+  document.getElementById('t-dividers').addEventListener('change', e => dividers.forEach(d => { d.visible = e.target.checked; if (!d.visible && selected === d) select(null); }));
+  document.getElementById('t-screens').addEventListener('change', e => screens.forEach(d => { d.visible = e.target.checked; if (!d.visible && selected === d) select(null); }));
+  document.getElementById('t-drops').addEventListener('change', e => setDrops(e.target.checked));
+
+  /* ---------- Spec rail ---------- */
+  const seats = tables.length * 3;
+  document.getElementById('st-area').textContent = String(L * W);
+  document.getElementById('st-cover').textContent = ((C.x1 - C.x0)*(C.z1 - C.z0)).toLocaleString('en-US');
+  document.getElementById('st-seats').textContent = `${seats} + 1`;
+  document.getElementById('st-boards').textContent = String(boardCount);
+  const specRows = [
+    ['Container shell', 'External footprint · height assumed (standard box)', `${fmt(L)} × ${fmt(W)} × ${fmt(H)}*`],
+    ['Sliding glass doors', 'Door wall, centred', `${fmt(SPEC.sliding.x1 - SPEC.sliding.x0)} × ${fmt(SPEC.sliding.y1)}*`],
+    ['Side door', 'Door wall, side-door end', `${fmt(SPEC.sideDoor.x1 - SPEC.sideDoor.x0)} × ${fmt(SPEC.sideDoor.y1)}*`],
+    ['Windows (2)', 'Board wall, either side of the teaching wall', `${fmt(SPEC.winL.x1 - SPEC.winL.x0)} + ${fmt(SPEC.winR.x1 - SPEC.winR.x0)}*`],
+    ['Whiteboard', 'Board wall, centred opposite the sliding doors', `${fmt(SPEC.board.x1 - SPEC.board.x0)} × ${fmt(SPEC.board.y1 - SPEC.board.y0)}*`],
+    ['Projection wall', 'Right of the whiteboard, filling the wall to the window', `${fmt(imgW)} × ${fmt(SPEC.proj.y1 - SPEC.proj.y0)}*`],
+    ['Short-throw projector', `Shelf ${fmt(SPEC.shelfY)} up the door wall · ${fmt(throwDist)} throw`, `${throwRatio} : 1`],
+    ['Hanging wipe boards', `${boardCount} landscape boards on rails · end walls and door wall`, '1′6″ × 1′'],
+    ['Hanging room dividers (2)', 'Hang from the ceiling grid · wipe board both sides', '4′ × 5′6″*'],
+    ['Large rolling screens (2)', 'Brought in as needed', '75″*'],
+    ['Pull-down power drops', 'From the ceiling grid, for maker work, workshops and conferences', '6'],
+    ['Directional ceiling mics', 'Record the whole room or run a video call', '3'],
+    ['Starlink', 'Satellite uplink on the top rail', '1'],
+    ['Ceiling tech grid', 'Unistrut-style rails, drop points every 4′ for lights or projectors', `${fmt(SPEC.ceilY)} up*`],
+    ['Wipe board wall', 'Door wall, under the projector shelf and behind the teacher desk', `${fmt(bigBoard.x1 - bigBoard.x0)} × ${fmt(bigBoard.y1 - bigBoard.y0)}*`],
+    ['Pull-down screens (3)', 'Over the whiteboard and both windows, floor to ceiling', '3'],
+    ['Clip-in ceiling projectors', 'Throw projectors that slip into the grid; together they can project the whole room', '7'],
+    ['Teacher desk', 'Square; under the shelf, under a campfire wall or to the side', `${fmt(SPEC.desk)} × ${fmt(SPEC.desk)}*`],
+    ['Trapezoid tables (4)', '3 students each · half-hexagon top', `${fmt(5)} / ${fmt(2.5)} × ${fmt(TD)}*`],
+    ['Chalkboard (outside)', 'Door wall, between side door and sliding doors', `${fmt(SPEC.chalk.x1 - SPEC.chalk.x0)} × ${fmt(SPEC.chalk.y1 - SPEC.chalk.y0)}*`],
+    ['Weatherproof lockers', 'Door wall, other side of the sliding doors', `${SPEC.lockers.n} × ${fmt(SPEC.lockers.w)}*`],
+    ['Covered area', 'Opens off the door wall', `${fmt(C.x1 - C.x0)} × ${fmt(C.z1 - C.z0)}`],
+    ['Mobile work tables (4)', 'On casters, whiteboard tops', '6′ × 3′*'],
+    ['Pop-up museum cubes (2)', 'Walk-in · string-grid walls and ceiling for clipped displays', `${fmt(MUSEUM)} cube*`]
+  ];
+  document.getElementById('spec').innerHTML = specRows.map(([k, s, v]) => `<dt>${k}<small>${s}</small></dt><dd>${v}</dd>`).join('');
+
+  /* ---------- Theme ---------- */
+  function applyTheme(){
+    const cs = getComputedStyle(document.documentElement);
+    const sc = cs.getPropertyValue('--scene').trim() || '#dae2de';
+    scene.background = new THREE.Color(sc); renderer.setClearColor(sc);
+    groundMat.color.set(cs.getPropertyValue('--ground').trim() || '#b5beb2');
+  }
+  applyTheme();
+  const mq = window.matchMedia('(prefers-color-scheme: dark)');
+  if (mq.addEventListener) mq.addEventListener('change', applyTheme); else if (mq.addListener) mq.addListener(applyTheme);
+  new MutationObserver(applyTheme).observe(document.documentElement, { attributes:true, attributeFilter:['data-theme'] });
+
+  /* ---------- Start ---------- */
+  setForm('groups');
+  applyLayout(false);
+  setPreset('sketch');
+  setPMode('standard');
+
+  function resize(){
+    const r = stage.getBoundingClientRect();
+    if (!r.width || !r.height) return;
+    renderer.setSize(r.width, r.height, false);
+    camera.aspect = r.width / r.height; camera.updateProjectionMatrix();
+  }
+  new ResizeObserver(resize).observe(stage); resize();
+
+  function applyWallFade(g, f){
+    g.userData.mats.forEach(m => {
+      const op = m.userData.base * f, transp = op < 0.999 || m.userData.always;
+      if (m.transparent !== transp) { m.transparent = transp; m.needsUpdate = true; }
+      m.opacity = op; m.depthWrite = !(op < 0.999);
+    });
+  }
+  function wallTarget(g){
+    if (!tCut.checked) return 1;
+    const p = camera.position, s = g.userData.side;
+    const outside = (s === 'front' && p.z > Z1) || (s === 'back' && p.z < Z0) || (s === 'right' && p.x > X1) || (s === 'left' && p.x < X0);
+    return outside ? 0.14 : 1;
+  }
+  const ease = k => k < 0.5 ? 4*k*k*k : 1 - Math.pow(-2*k + 2, 3)/2;
+  const proj = new THREE.Vector3();
+  const pageModel = document.getElementById('page-model');
+  window.addEventListener('mvc:page', resize);
+  function frame(now){
+    if (pageModel.hidden) { requestAnimationFrame(frame); return; }
+    if (tween) {
+      const k = Math.min(1, (now - tween.start)/tween.dur), e = ease(k);
+      camera.position.lerpVectors(tween.p0, tween.p1, e);
+      controls.target.lerpVectors(tween.t0, tween.t1, e);
+      camera.fov = tween.f0 + (tween.f1 - tween.f0)*e; camera.updateProjectionMatrix();
+      if (k >= 1) tween = null;
+    }
+    pullScreens.forEach(updateScreen);
+    if (moveTween) {
+      const k = Math.min(1, (now - moveTween.start)/moveTween.dur), e = ease(k);
+      moveTween.moves.forEach(m => { m.obj.position.lerpVectors(m.p0, m.p1, e); m.obj.rotation.y = m.r0 + (m.r1 - m.r0)*e; });
+      if (k >= 1) finishLayout();
+    }
+    controls.update();
+    walls.forEach(g => {
+      const t = wallTarget(g);
+      let cur = g.userData.cur + (t - g.userData.cur)*(reduceMotion.matches ? 1 : 0.18);
+      if (Math.abs(cur - t) < 0.003) cur = t;
+      g.userData.cur = cur;
+      if (cur !== g.userData.f) { g.userData.f = cur; applyWallFade(g, cur); }
+    });
+    canopyMat.opacity = camera.position.y > C.h ? 0.07 : 0.22;
+    if (!labelsEl.hidden) {
+      const w = stage.clientWidth, h = stage.clientHeight;
+      labels.forEach(l => {
+        proj.copy(l.getPos()).project(camera);
+        const vis = (!l.show || l.show()) && (!l.ref || shown(l.ref)) && proj.z < 1 && proj.z > -1 && Math.abs(proj.x) < 1.05 && Math.abs(proj.y) < 1.05;
+        l.el.style.display = vis ? '' : 'none';
+        if (vis) l.el.style.transform = `translate(${((proj.x + 1)/2*w).toFixed(1)}px, ${((1 - proj.y)/2*h).toFixed(1)}px) translate(-50%, -100%)`;
+      });
+    }
+    renderer.render(scene, camera);
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+})();
+</script>
+
+</body>
+</html>
